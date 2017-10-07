@@ -8,7 +8,7 @@ select o.object_id as 'Object_id',
           STATS_DATE(i.object_id,index_id) as 'Last updated',
           datediff(day,STATS_DATE(i.object_id,index_id),GETDATE()) as 'Day since updated',
           'UPDATE STATISTICS ['+s.name+'].['+o.name+'] ['+i.name+'] WITH FULLSCAN;' as 'Update Idx Stats',
-          'UPDATE STATISTICS ['+s.name+'].['+o.name+'] WITH FULL SCAN;' as 'Update Obj Stats'
+          'UPDATE STATISTICS ['+s.name+'].['+o.name+'] WITH FULLSCAN;' as 'Update Obj Stats'
   from sys.indexes i
   join sys.objects o
     on i.object_id = o.object_id
