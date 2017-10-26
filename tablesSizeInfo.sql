@@ -13,8 +13,8 @@ select s.name as 'SchemaName',
 			when 1 then 'Not Partitioned'
 			else 'Partitioned'
 	   end as 'IsTablePartitioned', 
-	   p.data_compression_desc as 'DataCompressionType',
-	   'select * from '+s.name+'.'+t.name
+	   p.data_compression_desc as 'DataCompressionType'
+	   --'select * from '+s.name+'.'+t.name
   from sys.tables t
   join sys.indexes i 
     on t.OBJECT_ID = i.object_id
@@ -29,5 +29,6 @@ select s.name as 'SchemaName',
    and t.is_ms_shipped = 0
    and i.object_id > 255 
    and p.rows > 0
+   and i.index_id in (0,1)
  group by t.Name, s.Name, p.Rows, a.used_pages,p.partition_number,p.data_compression_desc
  order by a.used_pages desc
