@@ -1,2 +1,11 @@
 script to build a lab automatically.
 https://github.com/Microsoft/ws2016lab
+ 
+@{}  -  empty hash table
+@{"key",value; "key",value}  -   hash table
+@params = @{"key",value; "key",value}
+
+Get-EventLog = @params
+
+
+@{"key",value; Expression={}}  -   hash table with calculated property
