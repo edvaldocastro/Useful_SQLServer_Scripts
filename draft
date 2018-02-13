@@ -9,3 +9,94 @@ Get-EventLog = @params
 
 
 @{"key",value; Expression={}}  -   hash table with calculated property
+
+
+
+
+
+
+
+#1. Enable Windows Optional Features
+Enable-WindowsOptionalFeature -Online -FeatureName Containers, Microsoft-Hyper-V -All
+
+#2. Install Docker
+$DockerInstaller = Join-path $Env:Temp InstallDocker.msi
+Start-BitsTransfer https://download.docker.com/win/stable/InstallDocker.msi -Destination $DockerInstaller
+msiexec -i $DockerInstaller -passive
+Start-Service com.docker.service -PassThru
+
+#3. Install Docker PS Module
+Install-Module posh-docker
+Import-Module posh-docker
+
+#Checking the Docker Service
+Get-Service *Docker*
+
+
+Docker info
+docker version
+Set-Location '\Program Files\Docker\Docker\'
+.\dockercli -Version
+
+#Switching the Docker Server Between Linux and windows
+.\DockerCli.exe -SwitchDaemon
+
+
+#Comandos
+
+ docker images
+ docker build -t ubuntubase:v1
+ docker history ubuntubase:v1
+ docker inspect ubuntubase:v1
+ 
+ #Run it on powershell console
+ docker fun -it --rm busybox
+ 
+ #Check info about the running container
+ docker ps -a
+ docker stats
+ 
+ #remove all images from a start point
+ docker rmi $(docker images -f since=61ed0ceb9f08 -q) #after mssql oficial image
+ 
+ #stop all containers
+ docker stop $(docker ps -a -q)
+ 
+ #remove all containers
+ docker rm -f $(docker ps -a -q)
+ 
+ 
+ ---------------------------------------------------------------------------------------------------------------------------
+ 
+ 
+ Set-Location C:\usr\SQLServer\Container\Dockerfiles\SQLLinux
+ 
+ #0. Search the docker images
+ docker search mssql
+ 
+ #1. Pull the latest SQL Server 2017 on Linux container
+ docker pull microsoft/mssql-server-linux:2017-latest
+ 
+ #2. Check the list of images available/pulled
+ docker images
+ 
+ #3. Check if there is any running container
+ docker ps -a
+ 
+ #4. Run the SQL Server 2017 Container
+ docker run -d -v C:/usr/SQLServer/Sample/:/backup -m 1024m -c 2 -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=D@rthV@derIsCool" -e 'MSSQL_PID=Developer' -p 8881:1433 --name SQL2017Linux microsoft/mssql-server-linux:2017-latest
+ 
+ #Note: Backup Volume Read_only
+ 
+ #5 Check the container status
+ docker ps -a
+ 
+ #6. Check container logs
+ docker logs SQL2017Linux
+ 
+ #7. Change the VM memory on Docker app
+ 
+ 
+ 
+ 
+ 
