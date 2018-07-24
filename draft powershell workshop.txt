@@ -1,0 +1,48 @@
+Ctrl + ] - go to brackets pair
+Ctrl + J - Keyboards shortcuts (snippets)
+
+get-help about_
+get-help about_wildcards
+get-help about_variables
+
+Start-Transcript Powershell_transcript.txt
+Stop-Transcript
+
+Get-History
+
+
+[char]::IsWhiteSpace("") - defines if it's a whitespace or not
+
+[char] | gm
+
+$a = 123
+"`$a = $a"
+"$a = 123
+
+$b = @()  -- declaring an empty array
+
+[array]::Sort($array)
+
+
+$states = @{} = empty hash table
+
+$states = @{"name"="value", "memory"=64GB} -- TWO RECORDS HASH TABLE
+$states = @{"WA"="Washington", "CA"="California"} -- TWO RECORDS HASH TABLE
+
+$states["WA"]
+Washington
+
+
+
+Splatting
+
+$params = @{
+Logname = "Application";
+Newest = 10;
+Entrytype = "Warning";
+ComputerName="LocalHost"
+}
+Get-EventLog @Params
+
+
+
