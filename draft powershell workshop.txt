@@ -570,6 +570,13 @@ Restore-SqlDatabase -ServerInstance "contoso\sql2012Inst1" -Database AdventureWo
                     -RelocateFile @($RelocateData,$RelocateLog) -Verbose 
 
 
+Task 9.1.5 Create permission audit solution for enterprise environment 
+1. To audit all SQL Servers, we will need to make the script created in previous task generic by adding ______. How many ______ should be added so this script can be used against any SQL Server instance and store audit data in any SQL Server instance?  
+ 
+  2. Add parameters $AuditComputerName and $AuditDBSvr to the script and update the script 3. Test your script by calling running: C:\SQLPSClass\Labs\Module_09\AuditPerm.ps1 -AuditCompuerName Contoso\SQL2012Inst1 -AuditDBSvr Contoso\SQL2012Inst1 4. To make AuditComputerName and AuditDBSvr parameters mandatory, what needed to be added: 
+ 
+ 
+
 
 
 
