@@ -45,4 +45,27 @@ ComputerName="LocalHost"
 Get-EventLog @Params
 
 
+-----------------------------------------------------------------------
+
+* SQLPS Commandlets
+* SMO
+
+-a----       24/07/2018     10:23        2195771 M01_SQL_PowerShell_Admin1_Introduction.pptx                                                                                                                                                                     
+-a----       21/10/2017     21:35         473375 M02_SQL_PowerShell_Admin1_Commands.pptx                                                                                                                                                                         
+-a----       21/10/2017     21:35         241968 M03_SQL_PowerShell_Admin1_Pipeline.pptx                                                                                                                                                                         
+-a----       21/10/2017     21:35         315454 M04_SQL_PowerShell_Admin1_Variables_and_Types.pptx                                                                                                                                                              
+-a----       21/10/2017     21:35         582358 M05_SQL_PowerShell_Admin1_Scripting.pptx                                                                                                                                                                        
+-a----       21/10/2017     21:35         435109 M06_SQL_PowerShell_Admin1_Remote.pptx                                                                                                                                                                           
+-a----       21/10/2017     21:35         543092 M06_SQL_PowerShell_Admin1_Remote_BestPractices.pptx                                                                                                                                                             
+-a----       21/10/2017     21:35         176220 M07_SQL_PowerShell_Admin1_SQL_Cmdlets.pptx                                                                                                                                                                      
+-a----       21/10/2017     21:35         687954 M08_SQL_PowerShell_Admin1_EnterprisePolicyBasedManagement.pptx                                                                                                                                                  
+-a----       21/10/2017     21:35        1133871 M09_SQL_PowerShell_Admin1_EnterprisePermissionAuditing.pptx                                                                                                                                                     
+-a----       21/10/2017     21:35         830442 M10_SQL_PowerShell_Admin1_PerformanceBenchMarking.pptx                                                                                                                                                          
+-a----       21/10/2017     21:35         226216 M11_SQL_PowerShell_Admin1_SMO.pptx                                                                                                                                                                              
+-a----       21/10/2017     21:35         492271 M12_SQL_PowerShell_Admin1_ConfiguringSQLServer.pptx                                                                                                                                                             
+-a----       21/10/2017     21:35         654072 M13_SQL_PowerShell_Admin1_ErrorLogMonitoring.pptx                                                                                                                                                               
+
+
+
+
 
