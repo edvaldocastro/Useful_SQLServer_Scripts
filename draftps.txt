@@ -868,7 +868,136 @@ write-host "The URN Path is:" $URN_Path
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
--a----       21/10/2017     21:35         492271 M12_SQL_PowerShell_Admin1_ConfiguringSQLServer.pptx                                                                                                                                                             
+-a----       21/10/2017     21:35         492271 M12_SQL_PowerShell_Admin1_ConfiguringSQLServer.pptx              
+
+
+#Module 12: Configuring SQL Server 
+
+<#
+Exercise 12.1: Change SQL Server Authentication Mode 
+Objectives  
+SQL Server Authentication Mode can be changed in SQL Server Management Studio manually. This setting isn't available in SQL Server configuration and cannot be changed using TSQL.  
+In this exercise, we will learn to SQLPS and SMO to change SQL Server Authentication mode. 
+After this exercise, you will be able to  • Change SQL Server authentication mode using SQLPS • Change SQL Server authentication mode using SMO 
+Scenario 
+Change Microsoft SQL Server authentication mode programmatically. Prerequisites  None 
+#>
+
+#Task 12.1.1 Change SQL Server authentication mode using SQLPS 
+
+#1. On your workstation go to Start   and type PowerShell ISE and press Enter. 
+#The PowerShell ISE opens and you will see the three parts of it. (See Below) 
+
+#2. In Windows PowerShell console, enter following commands and review their output: 
+
+Import-Module SQLPS -DisableNameChecking 
+Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1 | Get-Member 
+Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1 | Select ServiceName, LoginMode, Status
+
+#3. Run following command to change SQL Server authentication: 
+
+$localinstance = Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1 
+$localinstance.LoginMode = "Mixed" 
+$localinstance.Alter() 
+$localinstance.Refresh() 
+
+#4. Verify the authentication mode using following command:  
+(Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1).LoginMode   
+
+#You can also SQL Server Management Studio to verify whether the authentication mode has been changed:
+
+
+#Task 12.1.2 Change SQL Server authentication using SMO 
+
+#1. To be able to use SMO, you can use following command to load the assembly:  
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO') 
+
+
+#2. Running this command will also show information message, construct a pipeline that will suppress the information message: 
+ 
+#3. After loading SMO assembly, you will need to initialize a server variable: 
+$sql = new-object ('Microsoft.SqlServer.Management.Smo.Server')'Contoso\SQL2012Inst1' 
+#Use Get-Member to view the members of $sql: 
+$sql | Get-Member 
+ 
+#4. Use settings property to view $sql's settings: 
+$sql.Settings 
+
+
+#5. To view LoginMode of $sql, run following command: 
+$sql.LoginMode   
+ 
+#6. To view the type of Microsoft.SqlServer.Management.SMO.ServerLoginMode, you can use GetType() method: 
+$sql.LoginMode.GetType() 
+#What is the base type for LoginMode? 
+
+#7. System.Enum is a type that have a list of values. To be able to view the values, you can use following command: 
+[System.Enum]::GetValues([Microsoft.SqlServer.Management.SMO.ServerLoginMode]) 
+ 
+#What is the values for LoginMode:
+#Normal
+#Integrated
+#Mixed
+#Unknown 
+ 
+#8. To change SQL Server login mode to SQL Server login, fill in the blank for the following command: 
+$sql.LoginMode = [Microsoft.SqlServer.Management.SMO.ServerLoginMode]::normal  #normal 
+ 
+#9. Or you can also use ISE Intellisense by entering following in execution pane: 
+([Microsoft.SqlServer.Management.SMO.ServerLoginMode])::Normal
+
+#An Intellisense windows will popup and show the possible values. Or you can use 'TAB' key to tab through the members. 
+
+#10. Now we need to enable SA login by running following commands: 
+Invoke-Sqlcmd "Alter Login [sa] enable" -ServerInstance Contoso\SQL2012Inst1 
+Invoke-SqlCmd "Alter Login [sa] With password ='Password1'"  -ServerInstance Contoso\SQL2012Inst1 
+ 
+#11. To apply the change, run following command: 
+$sql.Alter() 
+ 
+#12. To make the new LoginMode effective, SQL Server will need to be restarted: 
+Restart-Service -Name 'MSSQL$SQL2012INST1' -Force
+
+Get-Service -Name 'MSSQL$SQL2012INST1'
+
+ 
+#13. Try login into SQL Server as sa and verify if Mixed LoginMode is effective: 
+Invoke-Sqlcmd -Username sa -Password Password1 -Query "Select @@ServerName" -ServerInstance Contoso\SQL2012Inst1
+
+
+
+<#
+Exercise 12.2: Managing SQL Server Configuration  
+Objectives  
+In this exercise, we will learn to SQL Server Configuration programmatically. 
+After completing this exercise, you will be able to  • Use SQLPS to view and update SQL Server configuration • Use SMO to view and update SQL Server configuration 
+Scenario  Update MAXDOP setting on CONTOSO\SQL2012INST1. Prerequisites  None
+#>
+
+#Task 12.2.1 Managing SQL Server configuration using SQLPS 
+#1. To view SQL Server configuration values, run following command: 
+$server = Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1  
+$server.Configuration.Properties | ` 
+Format-Table DisplayName, RunValue, ConfigValue, Minimum, Maximum 
+ 
+#Review the result and find the property name for MAXDOP: 
+ 
+#2. Run following command: 
+$server.Configuration.MaxDegreeOfParallelism.ConfigValue = 4 
+$server.Configuration.MaxDegreeOfParallelism
+
+#3. Construct a command that shows MAXDOP setting. 
+$server.Configuration.MaxDegreeOfParallelism
+#Did MAXDOP running value change? 
+#No 
+
+#4. To change MAXDOP configuration, run following command: 
+$server.Configuration.Alter() 
+
+#5. Did MAXDOP running value change this time? 
+
+$server.Configuration.MaxDegreeOfParallelism
+#Yes                                                                                                                                               
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
