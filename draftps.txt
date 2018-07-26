@@ -765,7 +765,106 @@ Get-Help Add-SqlTable
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
--a----       21/10/2017     21:35         226216 M11_SQL_PowerShell_Admin1_SMO.pptx                                                                                                                                                                              
+-a----       21/10/2017     21:35         226216 M11_SQL_PowerShell_Admin1_SMO.pptx    
+
+STAIRWAY TO SMO
+http://www.sqlservercentral.com/articles/SMO/140966/   
+
+ACCESSING SQL SERVER FROM POWERSHELL
+https://www.red-gate.com/simple-talk/sql/database-administration/the-posh-dba-accessing-sql-server-from-powershell/                                                                                                                                                                       
+
+
+#Module 11: SQL Server Management Objects (SMO)  
+#Student Lab Manual  
+
+<#
+
+Module 11 Lab Objectives  In this exercise, you will:  
+• Utilize SMO to work with SQL Server Databases 
+• Utilize SMO to work with a SQL Server Instance Scenario   
+You want to get the database data file and log file names of the databases.  
+You want to determine what drives or mount points the database files reside in the event you need to resolve a space issue.  
+The second part of this lab will allow you to retrieve information about the Instance.  
+Changing instance settings will be covered in more detail in a later lab. 
+Prerequisites   
+None 
+Virtual Machine Details 
+• Virtual Machine Name:Contoso 
+• Login Username:Contoso\Administrator 
+• Login Password: Password1 
+
+Estimated Time to Complete These Lab’s  30 minutes 
+ 
+#>
+
+
+#Task 1. On your workstation go to Start   and type PowerShell ISE and press Enter. (See Below) 
+ 
+ 
+ 
+#2. In the top box type the following: 
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExt ended')  | out-null  
+$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("Contoso\SQL2012Inst1")  
+$db = New-Object Microsoft.SqlServer.Management.Smo.Database  
+$db = $srv.Databases.Item("AdventureWorks2012")  
+ 
+Foreach ($lf in $db.LogFiles)  {     $lf.Name  
+   $lf.filename  }
+
+
+#3. Now let’s create a new database called SMO_Database using SMO. 
+#In the top box type the following: 
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExt ended')  | out-null  
+$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1") 
+$dbname = 'SMO_Database_lab'  
+$db = new-object Microsoft.SqlServer.Management.Smo.Database ($srv,$dbname)  
+$db.Create()  
+
+
+#4. Create a script to list all databases 
+
+$SMOSrv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1")
+$SMOSrv.Databases
+
+#5. Do you see SMO_Database listed?
+yes
+
+
+
+#Exercise 11.2: Utilize SMO to work with a SQL Server Instance 
+
+#2. In the top box type the following: 
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExtend ed')  | out-null  
+
+$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1")  
+$srv.ErrorLogPath
+#C:\Program Files\Microsoft SQL Server\MSSQL11.SQL2012INST1\MSSQL\Log
+
+
+#3. In the top box type the following: 
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExtend ed')  | out-null  
+
+$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1")  
+$srv.Collation  
+
+#Latin1_General_CI_AS
+
+
+#4. Let’s convert a SMO URN to a URN Path. In the top box type the following: 
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExtend ed')  | out-null  
+$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1")  
+$SMO_URN=$srv.urn  
+# Now let’s covert it to a path  
+$URN_Path=Convert-UrnToPath –urn $SMO_URN  
+write-host "The URN Path is:" $URN_Path  
+#The URN Path is: SQLSERVER:\SQL\CONTOSO\SQL2012INST1 
+
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
