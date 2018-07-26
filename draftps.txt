@@ -575,17 +575,193 @@ Task 9.1.5 Create permission audit solution for enterprise environment
  
   2. Add parameters $AuditComputerName and $AuditDBSvr to the script and update the script 3. Test your script by calling running: C:\SQLPSClass\Labs\Module_09\AuditPerm.ps1 -AuditCompuerName Contoso\SQL2012Inst1 -AuditDBSvr Contoso\SQL2012Inst1 4. To make AuditComputerName and AuditDBSvr parameters mandatory, what needed to be added: 
  
- 
-
-
-
-
-
-                                                                                                                                             
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
 -a----       21/10/2017     21:35         830442 M10_SQL_PowerShell_Admin1_PerformanceBenchMarking.pptx                                                                                                                                                          
+
+$profile
+#C:\Users\Administrator\Documents\WindowsPowerShell\Microsoft.PowerShellISE_profile.ps1
+C:\Users\Administrator\Documents\WindowsPowerShell\Microsoft.PowerShellISE_profile.ps1
+
+#Exercise 10.1: Get-Counter 
+#Objectives  
+#In this exercise, we will learn how to use Get-Counter to collect performance counter data for SQL Server. • Get Counter Set • Get Counter 
+#Scenario  Use Get-Counter to collect performance counters for SQL Server environment 
+#Prerequisites    None
+
+
+
+
+#Task 10.1.1 List Counter Set 
+#1. Run following command: 
+
+Get-Counter -Listset * 
+
+#2. To just display counter set name, enter following command: 
+Get-Counter -Listset * | Select CounterSetName 
+
+#3. Construct a pipeline to show the CounterSetName that contains key word SQL: 
+
+Get-Counter -ListSet *SQL* | select CounterSetName
+
+
+
+
+
+#Task 10.1.2 List Counters 
+#1. Enter following command: 
+
+Get-Counter -Listset * -ComputerName Contoso | ` 
+Select CounterSetName, Description | Format-Table -AutoSize 
+ 
+#2. What is the CounterSet for SQL Server buffer manager performance counter?? 
+(Get-Counter -ListSet '*MSSQL$SQL2012INST1:Buffer Manager*').counter
+PS C:\> (Get-Counter -ListSet '*MSSQL$SQL2012INST1:Buffer Manager*').counter
+    \MSSQL$SQL2012INST1:Buffer Manager\Buffer cache hit ratio
+    \MSSQL$SQL2012INST1:Buffer Manager\Page lookups/sec
+    \MSSQL$SQL2012INST1:Buffer Manager\Free list stalls/sec
+    \MSSQL$SQL2012INST1:Buffer Manager\Database pages
+    \MSSQL$SQL2012INST1:Buffer Manager\Target pages
+    \MSSQL$SQL2012INST1:Buffer Manager\Integral Controller Slope
+    \MSSQL$SQL2012INST1:Buffer Manager\Lazy writes/sec
+    \MSSQL$SQL2012INST1:Buffer Manager\Readahead pages/sec
+    \MSSQL$SQL2012INST1:Buffer Manager\Page reads/sec
+    \MSSQL$SQL2012INST1:Buffer Manager\Page writes/sec
+    \MSSQL$SQL2012INST1:Buffer Manager\Checkpoint pages/sec
+    \MSSQL$SQL2012INST1:Buffer Manager\Background writer pages/sec
+    \MSSQL$SQL2012INST1:Buffer Manager\Page life expectancy
+
+
+
+#3. Enter following command: 
+Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager' 
+ 
+#4. Run following command to get multiple counter set names 
+Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager', 'MSSQL$SQL2012Inst1:Locks' 
+ 
+#5. Run following command to get complete list of multiple counter set: 
+(Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager','MSSQL$SQL2012Inst1:Locks').Counter 
+ 
+#6. Construct a pipeline shows the total number of counters based on the output of previous step: 
+(Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager','MSSQL$SQL2012Inst1:Locks').Counter | Measure-Object
+
+
+
+
+#Task 10.1.3 Collect Counter Values 
+
+#1. Enter following command: 
+Get-Counter -Counter ‘\MSSQL$SQL2012Inst1:buffer manager\page life expectancy’ 
+ 
+#2. What is the command to collect previous counter 3 times with 2 seconds interval? 
+Get-Counter -Counter ‘\MSSQL$SQL2012Inst1:buffer manager\page life expectancy’ -SampleInterval 2 -MaxSamples 3
+
+#TIP: Use Get-Help to get Get-Counter parameters 
+get-help Get-Counter
+
+
+#3. Enter following command: 
+Get-Counter -Counter '\MSSQL$SQL2012Inst1:buffer manager\page life expectancy' ,` '\MSSQL$SQL2012Inst1:locks(_total)\lock requests/sec' ` -SampleInterval 2 -MaxSamples 3 
+ 
+#4. Construct a pipeline to collect all the counters in 'MSSQL$SQL2012Inst1:Buffer Manager' counter set 3 times at 2 seconds interval
+(Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager').counter | Get-Counter -SampleInterval 2 -MaxSamples 3
+
+
+
+
+
+
+#Exercise 10.2: Add-SqlTable, Out-DataTable & WriteDataTable 
+#Objectives  
+#In this exercise, we will use Add-SqlTable, Out-DataTable and Write-DataTable to create a performance monitoring solution.  • Scope • Dot-source Notation 
+#Scenario  Use Add-SqlTable, Out-DataTable and Write-DataTable build a complete solution. Prerequisites 
+ 
+#Task 10.2.1 Install Script Browser 
+
+#1. If virtual machine has internet access skip to step #4. 
+#2. Copy all the files from C:\SQLPSClass\Labs\Module_10\Backup\ folder to C:\SQLPSClass\Labs\Module_10\. 
+#3. Skip to step #18. 
+#4. Script Browser is an addon for Windows PowerShell ISE. This addon will allow us to search scripts in TechNet Script Gallery Center from within ISE environment.  
+#5. Close all open ISE windows 
+#6. We can find the modules published on the Script Gallery using Find-Module. 
+#7. Launch PowerShell Console using Run as Admin and enter following command and execute it: PS C:\> Find-Module ScriptBrowser
+#8. Now let’s install the module using Install-Module. PS C:\> Install-Module ScriptBrowser 
+#9. You’ll get the following message, enter “Y” for download & install.  
+#10. After installation, open a new ISE under administrator privilege 
+#11. In a new script window enter following commands: 
+    Enable-ScriptAnalyzer 
+    Enable-ScriptBrowser 
+#12. In the search box near top, enter "Add-SqlTable" and press <Enter> button
+#13. Double click on "Add-SqlTable" in the "Search Results"  
+#14. Click on "Select All" button under "Script Snippet" 
+#15. Click on "Open" button 16. Save the new script as "Add-SqlTable.ps1" under C:\SQLPSClass\Labs\Module_10 
+#17. Repeat steps from Step 6 to Step 10 for "Out-DataTable" and "Write-DataTable" and name them as "Out-DataTable.ps1" and "Write-DataTable" respectively. 
+
+#18. Enter following command in ISE windows and execute: . 
+
+C:\SQLPSClass\Labs\Module_10\Out-DataTable $d = Get-Counter ‘\MSSQL$SQL2012INST1:buffer manager\page life expectancy’| ` Out-DataTable 19. 
+
+#What is the result?
+
+#20. What is reason for this result? 
+
+
+
+#Task 10.2.2 Add-SqlTable & Write-DataTable 
+
+#1. Enter following command in ISE window: 
+
+Import-Module SQLPS -DisableNameChecking 
+ 
+.\C:\SQLPSClass\Labs\Module_10\Add-SqlTable.ps1 
+.\C:\SQLPSClass\Labs\Module_10\Out-DataTable.ps1 
+.\C:\SQLPSClass\Labs\Module_10\Write-DataTable.ps1 
+ 
+$data = ((Get-Counter -ListSet 'MSSQL$SQL2012INST1:Buffer Manager' `
+-ComputerName Contoso).Counter | `
+Get-Counter).CounterSamples |`
+Select-Object TimeStamp, Path, CookedValue  |`
+Out-DataTable 
+ 
+#Explain the dot sign before C:\SQLPSClass\Labs\Module_10\Add-SqlTable.ps1, what would happen if the dot is removed: 
+ 
+ 
+#2. In the execution pane, enter $data and review the result 
+
+#3. Open a new PowerShell console and enter $data, what is the result? 
+ 
+ 
+#4. Open SQL Server Management Studio and run following TSQL to create a new database named PerfCol: Create Database PerfCol 
+ 
+#5. Go back to previous ISE and enter following command:  
+
+Get-Help Add-SqlTable 
+
+ 
+#Review the command syntax and construct a command that will create "PerfValue" table in "PerfCol" database in Contoso\SQL2012INST1 instance using $data: 
+ 
+#6. Does previous command succeed? True / False 
+#7. What is the command to see the data type of $data: 
+ 
+ 
+#8. What is the data type of $data: 
+ 
+ 
+#9. Use SQL Server Management Studio and verify the table has been created: True / False 
+#10. Does this table contain any data? True / False 
+#11. To populate PermValue table with data, Write-DataTable command can be used for this purpose. Use Get-Help to review the syntax of Write-DateTable and construct the command for this purpose: 
+ 
+#12. Save the finished script as PerfCol.ps1 under C:\SQLPSClass\Labs\Module_10\  
+ 
+
+
+#Task 10.2.3 Optional – Implement a performance monitoring solution 
+#1. You're given a task to implement a performance monitoring solution for your SQL Server environment: 
+#• The counters are provided in C:\SQLPSClass\Labs\Module10\PerfCounters.txt 
+#• The servers are being monitored is CONTOSO\SQL2012INST1 
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -605,6 +781,84 @@ Task 9.1.5 Create permission audit solution for enterprise environment
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+####################### 
+<# 
+.SYNOPSIS 
+Writes data only to SQL Server tables. 
+.DESCRIPTION 
+Writes data only to SQL Server tables. However, the data source is not limited to SQL Server; any data source can be used, as long as the data can be loaded to a DataTable instance or read with a IDataReader instance. 
+.INPUTS 
+None 
+    You cannot pipe objects to Write-DataTable 
+.OUTPUTS 
+None 
+    Produces no output 
+.EXAMPLE 
+$dt = Invoke-Sqlcmd2 -ServerInstance "Z003\R2" -Database pubs "select *  from authors" 
+Write-DataTable -ServerInstance "Z003\R2" -Database pubscopy -TableName authors -Data $dt 
+This example loads a variable dt of type DataTable from query and write the datatable to another database 
+.NOTES 
+Write-DataTable uses the SqlBulkCopy class see links for additional information on this class. 
+Version History 
+v1.0   - Chad Miller - Initial release 
+v1.1   - Chad Miller - Fixed error message 
+.LINK 
+http://msdn.microsoft.com/en-us/library/30c3y597%28v=VS.90%29.aspx 
+#> 
+function Write-DataTable 
+{ 
+    [CmdletBinding()] 
+    param( 
+    [Parameter(Position=0, Mandatory=$true)] [string]$ServerInstance, 
+    [Parameter(Position=1, Mandatory=$true)] [string]$Database, 
+    [Parameter(Position=2, Mandatory=$true)] [string]$TableName, 
+    [Parameter(Position=3, Mandatory=$true)] $Data, 
+    [Parameter(Position=4, Mandatory=$false)] [string]$Username, 
+    [Parameter(Position=5, Mandatory=$false)] [string]$Password, 
+    [Parameter(Position=6, Mandatory=$false)] [Int32]$BatchSize=50000, 
+    [Parameter(Position=7, Mandatory=$false)] [Int32]$QueryTimeout=0, 
+    [Parameter(Position=8, Mandatory=$false)] [Int32]$ConnectionTimeout=15 
+    ) 
+     
+    $conn=new-object System.Data.SqlClient.SQLConnection 
+ 
+    if ($Username) 
+    { $ConnectionString = "Server={0};Database={1};User ID={2};Password={3};Trusted_Connection=False;Connect Timeout={4}" -f $ServerInstance,$Database,$Username,$Password,$ConnectionTimeout } 
+    else 
+    { $ConnectionString = "Server={0};Database={1};Integrated Security=True;Connect Timeout={2}" -f $ServerInstance,$Database,$ConnectionTimeout } 
+ 
+    $conn.ConnectionString=$ConnectionString 
+ 
+    try 
+    { 
+        $conn.Open() 
+        $bulkCopy = new-object ("Data.SqlClient.SqlBulkCopy") $connectionString 
+        $bulkCopy.DestinationTableName = $tableName 
+        $bulkCopy.BatchSize = $BatchSize 
+        $bulkCopy.BulkCopyTimeout = $QueryTimeOut 
+        $bulkCopy.WriteToServer($Data) 
+        $conn.Close() 
+    } 
+    catch 
+    { 
+        $ex = $_.Exception 
+        Write-Error "$ex.Message" 
+        continue 
+    } 
+ 
+} #Write-DataTable
 
 
 
