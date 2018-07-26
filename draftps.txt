@@ -1,1109 +1,122 @@
-Links:
-https://blog.netnerds.net/2016/12/loading-smo-in-your-sql-server-centric-powershell-modules/
+#Module 13: Error Log Monitoring
 
 
+#Module 13 Lab  
+#Introduction  In this lab, you will learn how to assign multiple values to one variable and Regular Expression to match key words 
+#and capture valuable information from SQL Server error logs.  
 
+#Objectives  After completing this lab, you will be able to: 
+#• Creating and access arrays 
+#• Use Regular Expression to match values 
+#• Monitoring SQL Server Error logs using SQLPS Prerequisites   None Virtual Machine Details 
+#• Virtual Machine Name:Contoso 
+#• Login Username:Contoso\Administrator 
+#• Login Password: Password1 
 
+#Estimated Time to Complete These Lab’s  45 minutes 
 
 
-
-
-
-https://blogs.technet.microsoft.com/heyscriptingguy/2013/05/06/10-tips-for-the-sql-server-powershell-scripter/
-
-
-#Don't do this:
-$query = "SELECT DISTINCT"
-$query +="`n s.server_name"
-$query += "`n FROM    msdb.dbo.sysmanagement_shared_registered_servers s"
-$query +="`n JOIN msdb.dbo.sysmanagement_shared_server_groups g ON s.server_group_id = g.server_group_id"
-$query += "`n WHERE   g.name = '$group'"
- 
-#Instead use a here-string:
-$query = @"
-SELECT DISTINCT
-        s.server_name
-FROM    msdb.dbo.sysmanagement_shared_registered_servers s
-        JOIN msdb.dbo.sysmanagement_shared_server_groups g ON s.server_group_id = g.server_group_id
-WHERE   g.name = '$group'
-"@
-
-
-
-
-
-
-
-
-Ctrl + ] - go to brackets pair
-Ctrl + J - Keyboards shortcuts (snippets)
-
-get-help about_
-get-help about_wildcards
-get-help about_variables
-
-Start-Transcript Powershell_transcript.txt
-Stop-Transcript
-
-Get-History
-
-
-[char]::IsWhiteSpace("") - defines if it's a whitespace or not
-
-[char] | gm
-
-$a = 123
-"`$a = $a"
-"$a = 123
-
-$b = @()  -- declaring an empty array
-
-[array]::Sort($array)
-
-
-$states = @{} = empty hash table
-
-$states = @{"name"="value", "memory"=64GB} -- TWO RECORDS HASH TABLE
-$states = @{"WA"="Washington", "CA"="California"} -- TWO RECORDS HASH TABLE
-
-$states["WA"]
-Washington
-
-
-
-Splatting
-
-$params = @{
-Logname = "Application";
-Newest = 10;
-Entrytype = "Warning";
-ComputerName="LocalHost"
-}
-Get-EventLog @Params
-
-
------------------------------------------------------------------------
-
-* SQLPS Commandlets
-* SMO
-
--a----       24/07/2018     10:23        2195771 M01_SQL_PowerShell_Admin1_Introduction.pptx                                                                                                                                                                     
--a----       21/10/2017     21:35         473375 M02_SQL_PowerShell_Admin1_Commands.pptx                                                                                                                                                                         
--a----       21/10/2017     21:35         241968 M03_SQL_PowerShell_Admin1_Pipeline.pptx                                                                                                                                                                         
--a----       21/10/2017     21:35         315454 M04_SQL_PowerShell_Admin1_Variables_and_Types.pptx                                                                                                                                                              
--a----       21/10/2017     21:35         582358 M05_SQL_PowerShell_Admin1_Scripting.pptx                                                                                                                                                                        
--a----       21/10/2017     21:35         435109 M06_SQL_PowerShell_Admin1_Remote.pptx                                                                                                                                                                           
--a----       21/10/2017     21:35         543092 M06_SQL_PowerShell_Admin1_Remote_BestPractices.pptx                                                                                                                                                             
--a----       21/10/2017     21:35         176220 M07_SQL_PowerShell_Admin1_SQL_Cmdlets.pptx                                                                                                                                                                      
--a----       21/10/2017     21:35         687954 M08_SQL_PowerShell_Admin1_EnterprisePolicyBasedManagement.pptx                                                                                                                                                  
--a----       21/10/2017     21:35        1133871 M09_SQL_PowerShell_Admin1_EnterprisePermissionAuditing.pptx                                                                                                                                                     
--a----       21/10/2017     21:35         830442 M10_SQL_PowerShell_Admin1_PerformanceBenchMarking.pptx                                                                                                                                                          
--a----       21/10/2017     21:35         226216 M11_SQL_PowerShell_Admin1_SMO.pptx                                                                                                                                                                              
--a----       21/10/2017     21:35         492271 M12_SQL_PowerShell_Admin1_ConfiguringSQLServer.pptx                                                                                                                                                             
--a----       21/10/2017     21:35         654072 M13_SQL_PowerShell_Admin1_ErrorLogMonitoring.pptx                                                                                                                                                               
-
-
-
-
-M05_SQL_PowerShell_Admin1_Scripting.pptx   
-
-Execution Policy
-
-- Restricted
-- All Signed
-- Remote Signed
-- Unrestricted
-
----Scope
-
----- MachinePolicy
----- UserPolicy
----- Process
----- CurrentUser
----- LocalMachine
-
-=============
-$cert = gci  cert:\currentuser\blablabla codesigningcert
-
-runnning a script
-
-.\script.psi
-
-c:\folder\script.ps1
-
-& "c:\folder\script.ps1"
-
-cmd
-powershell.exe -noExist -File "c:\folder\script.ps1"
-
-OBS double click will only open
-
-================
-
-Param()
-
-param(
-      [parameter(position=0),Mandatory=$true][int]$ParamName
-)
-
-========================
-
-Error handling
-
-$Error variable keep a of the error
-$Error[0] - most recent error
-$Error[0].Exception.Message  - most recent error message
-
--ErrorAction parameter
-$ErrorActionPreference variable
-
-$ErrorActionPreference = "SilentlyContinue" 
-
-Get-Content C:\nofolder\nofile.txt 
-
-
-
-Try 
-{
-}
-catch
-{
-}
-finally (optional)
-{
-}
-
-=========================
-
-#Requires -RunAsAdministrator
-#Requires -Version 
-
-========================
-
-
-
-
-
-
---------------------------------------------------------------------------------------------
-
--a----       21/10/2017     21:35         435109 M06_SQL_PowerShell_Admin1_Remote.pptx                                                                                                                                                                           
-
-Enable Remoting
-
-enalbe-psremoting
-
-
-#LAB 5
-
-CD C:\SQLPSClass\Labs\Module_05
-
-$todays_dt = Get-Date
-write-host $todays_dt -ForegroundColor Green
-
-
-Function Test-Function
-{
-    param
-    (
-        $p1
-    )
-    "This is a test function, p1 is $p1"    
-    
-}
-
-
-Test-Function -p1 6
-
-
-Function Test-Function
-{
-    param
-    (
-        [parameter(Mandatory=$true)]$p1
-    )
-    "This is a test function, p1 is $p1"    
-    
-}
-
-Test-Function 6
-
-
-
-Get-Help Test-Function -Parameter p1
-
-
-
-
-
-cd C:\SQLPSClass\Labs\Module_05
-
-
-
-.\M05_Lab_InputScript.ps1 Microsoft
-.\M05_Lab_InputScript.ps1 "SQL Server"
-
-
-.\M05_Lab_MultipleInput.ps1 Microsoft "SQL Server"
-
-
-.\M05_Lab_MultipleInput.ps1 -InputString2 Microsoft -InputString1 "SQL Server"
-
-
-
-Throw "This is terminating error"
-"The end""The end"
-
-
-try
-{
-    "NOTHING TO DECLARE"
-}
-catch [DivideByZeroException]
-{
-    "Divide by zero exception"
-}
-catch [System.Exception]
-{
-    "Other Exception"
-}
-finally
-{
-    "No error found"
-}
-
-
-
-
-Get-Content C:\nofolder\nofile.txt -ErrorAction Continue
-"The end 1"
-
-
-Get-Content C:\nofolder\nofile.txt -ErrorAction SilentlyContinue
-"The end 2"
-
-
-Get-Content C:\nofolder\nofile.txt -ErrorAction ignore
-"The end 3"
-
-
-Get-Content C:\nofolder\nofile.txt -ErrorAction stop
-"The end 4"
-
-
-$ErrorActionPreference = "SilentlyContinue" 
-Get-Content C:\nofolder\nofile.txt
-
-
-
-
-
-
-SQL Server Credential
-
-
-
-
-
-
-
-
-
--a----       21/10/2017     21:35         543092 M06_SQL_PowerShell_Admin1_Remote_BestPractices.pptx                                                                                                                                                             
-------------------------------------------------------------------------------------------------------------------------------------------------------
--a----       21/10/2017     21:35         176220 M07_SQL_PowerShell_Admin1_SQL_Cmdlets.pptx 
-
-#LAB MODULE 7
-
-
-Import-Module sqlps -DisableNameChecking 
-Invoke-Sqlcmd -Query "select db_name(database_id) as name, physical_name from sys.master_files” -ServerInstance "contoso\sql2012inst1" 
-
-
-
-#3. In this step let’s create a database. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-
-$sqlstmt=”Create Database MyDB”  
-
-Invoke-Sqlcmd -Query $sqlstmt -ServerInstance "contoso\sql2012inst1"  
-
-#7. Go back to PowerShell ISE that is open. Now let’s create a table. In the top box type the following: 
-
-Import-Module sqlps -DisablNameChecking 
-
-$sqlstmt=”Create table mydb.dbo.TABLE_A (id int,first_name varchar(10),Last_name varchar(20))”
-
-Invoke-Sqlcmd -Query $sqlstmt -ServerInstance "contoso\sql2012inst1" 
-
-
-
-#10. Now insert data into the table created in step 4, dbo.TABLE_A.  In the top box type the following: 
-
-Import-Module sqlps -DisableNameChecking 
-$sqlstmt="Insert into mydb.dbo.TABLE_A (id,first_name,Last_name) values (2,'Janet','Smith')"  
-write-host $sqlstmt  Invoke-Sqlcmd -Query $sqlstmt -ServerInstance "contoso\sql2012inst1"   
-
-
-#11. Let’s export the results of the invoke-sqlcmd to a CSV file. 
-
-Import-Module sqlps -DisableNameChecking 
-Invoke-Sqlcmd -Query "select db_name(database_id) as name, physical_name from sys.master_files" -ServerInstance "contoso\sql2012inst1" | `
-Export-CSV "C:\SQLPSClass\Labs\Module_07\Output\CSV_OUT.csv"  
-
-C:\SQLPSClass\Labs\Module_07\Output\CSV_OUT.csv
-
-
-#sql cmd and invoke sqlcmd
-
-#3. Run following command using Invoke-SqlCmd: 
-
-Import-Module SQLPS -DisableNameChecking 
-Invoke-SqlCmd -ServerInstance Contoso\SQL2012Inst1 -Database master -Query "Select @@Servername" 
-
-
-#Enter following command to execute a script file  
-Import-Module SQLPS -DisableNameChecking 
-Invoke-SqlCmd -ServerInstance Contoso\SQL2012Inst1 -InputFile C:\SQLPSClass\Labs\Module_07\ServerLogins.sql  
-
-
-#Run following command in Windows PowerShell: 
-Import-Module SQLPS -DisableNameChecking 
-Invoke-SqlCmd -ServerInstance Contoso\SQL2012Inst1 -InputFile C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Get-Member  
-
-
-#Run same script file with SqlCmd: 
-Sqlcmd -S Contoso\SQL2012Inst1 -i C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Get-Member   
-
-
-#5. Run following command and review the difference: 
-Import-Module SQLPS -DisableNameChecking 
-
-Invoke-SqlCmd -ServerInstance Contoso\SQL2012Inst1 -InputFile C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Out-GridView 
-
-Sqlcmd -S Contoso\SQL2012Inst1 -i C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Out-GridView    
-
-
-#6. Run following command: 
-Import-Module SQLPS -DisableNameChecking 
-Invoke-SqlCmd -ServerInstance Contoso\SQL2012Inst1 -InputFile C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Measure-Object
-
-#7. Run following command: 
-Sqlcmd -S Contoso\SQL2012Inst1 -i C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Measure-Object 
-
-
-#10. Run following command and review the result: 
-Import-Module SQLPS -DisableNameChecking  
-Invoke-SqlCmd -ServerInstance Contoso\SQL2012Inst1 -InputFile C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Format-Table 
-Invoke-SqlCmd -ServerInstance Contoso\SQL2012Inst1 -InputFile C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Format-Table -GroupBy LoginType
-
-
-#11. Run following command and review the result: 
-
-Sqlcmd -S Contoso\SQL2012Inst1 -i C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Format-Table 
-Sqlcmd -S Contoso\SQL2012Inst1 -i C:\SQLPSClass\Labs\Module_07\ServerLogins.sql | Format-Table -GroupBy LoginType
-
-
-#12. Run following commands and review the result: 
-$data1 = Invoke-SqlCmd -ServerInstance Contoso\SQL2012Inst1 -InputFile C:\SQLPSClass\Labs\Module_07\ServerLogins.sql 
-$data1.LoginName 
-$data1 | ForEach-Object {"$($_.LoginName) is $($_.LoginType)"} 
-
-
-#13. Run following commands and review the result: 
-$data2 = Sqlcmd -S Contoso\SQL2012Inst1 -i C:\SQLPSClass\Labs\Module_07\ServerLogins.sql 
-$data2.LoginName 
-$data2 | Foreach-object {"$($_.LoginName) is $($_.LoginType)"} 
-
-
-
-#Exercise 7.3: Working with Backup-SqlDatabase 
-
-
-#2. Let’s backup a user database called MyDB.  In the top box type the following: 
-
-Import-Module sqlps -DisableNameChecking 
-Backup-SqlDatabase -ServerInstance "contoso\sql2012inst1" -Database "MyDB" -BackupAction Database -BackupFile "C:\SQLPSClass\Labs\Module_07\Output\MyDB.bak" 
-
-#4. This is how to backup a transaction log for user database, MyDB.  In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-Backup-SqlDatabase -ServerInstance "contoso\sql2012inst1" -Database "MyDB" 
-BackupAction Log -BackupFile "c:\SQLPSClass\Labs\Module_07\Output\TLOG_MyDB.trn" 
-
-#6. This is how to backup a transaction log for user database, MyDB with a timestamp in the name.  In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-$dt_stamp=Get-Date -format MMddyyyyhhmmss 
-$fileName="c:\SQLPSClass\Labs\Module_07\Output\TLOG_MyDB_" + $dt_stamp + ".trn" 
-$fileName 
-Backup-SqlDatabase -ServerInstance "contoso\sql2012inst1" -Database "MyDB" -BackupAction Database -BackupFile $fileName -Verbose
-
-
-
-#Exercise 7.4: Working with Restore-SqlDatabase 
-
-#2. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-$sqlstmt=”drop database MyDB”  
-Invoke-Sqlcmd -Query $sqlstmt -ServerInstance "contoso\sql2012inst1"  -Verbose
-
-
-#6. Restore MyDB from backup. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-Restore-SqlDatabase -ServerInstance "contoso\sql2012inst1" -Database "MyDB" -BackupFile "c:\SQLPSClass\Labs\Module_07\Output\MyDB.bak" -NoRecovery  -verbose
-
-
-#9. Restore MyDB transaction log.  In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-Restore-SqlDatabase -ServerInstance "contoso\sql2012inst1" -Database "MyDB" -BackupFile "c:\SQLPSClass\Labs\Module_07\Output\TLOG_MyDB.trn" -Verbose
-
-#use splatting for this aforementioned commands
-
-params @{
-serverinstance = "contoso\sqlinst1"
-Database = "MyDB"
-BackupAction = "Database"
-Verbose = $true
-}
-Backup-SqlDatabase @params
-
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-                                                                                                                                                                     
-
--a----       21/10/2017     21:35         687954 M08_SQL_PowerShell_Admin1_EnterprisePolicyBasedManagement.pptx      
-
-Invoke-PolicyEvaluation -Policy "" -TargetServer "contoso\SQL2012Inst1"
-
-
-#LAB MODULE 8 - Enterprise Policy Based Management
-
-
-#2. In the top box type the following: 
-Set-Location “C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Policies\DatabaseEngine\1033” | Measure-Object
-dir 
-
-
-
-#3. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-Set-Location “C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Policies\DatabaseEngine\1033” 
-Invoke-PolicyEvaluation -Policy “Trustworthy Database.xml” -TargetServerName “CONTOSO\SQL2012INST1” 
-
-#2. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-Set-Location “C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Policies\DatabaseEngine\1033” 
-Get-ChildItem | Invoke-PolicyEvaluation -TargetServer Contoso\SQL2012INST1 | Out-File C:\SQLPSClass\Labs\Module_08\Output\XmlResult.xml  
-
-#2. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-Set-Location “C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Policies\DatabaseEngine\1033” 
-Get-ChildItem | Invoke-PolicyEvaluation -TargetServer Contoso\SQL2012INST1 | Export-Csv C:\SQLPSClass\Labs\Module_08\Output\Result1.csv 
-
-
-#Exercise 8.4: Differences PBM with PowerShell 
-
-#2. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-Set-Location “C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Policies\DatabaseEngine\1033” 
-Invoke-PolicyEvaluation -Policy “Trustworthy Database.xml” -TargetServerName “CONTOSO\SQL2012INST1”
-
-
-#3. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-$SQLStatement=” select * from msdb.dbo.syspolicy_policy_execution_history” 
-Invoke-Sqlcmd -Query $SQLStatement -ServerInstance "contoso\sql2012inst1"
-
-#4. Now let’s import the policy and run in SQL Server Management Studio. Open SQL Server Management Studio tool by clicking on the  SQL Server Management Studio icon on the taskbar as show below. 
-
-#5. In the “Connect to Server” dialog box, select “Database Engine” as Server type and type CONTOSO\SQL2012INST1 in the Server Name box.  Click Connect 
-
-#6. In the Object Explorer, right click the SQL Server instance name  ->Management->Policy Based Management->Policy->Import Policy 
-
-#7. Browse to the following directory and click ok. C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Policies\DatabaseEngine\1033
-#Choose the file Trustworthy Databases.xml then click Open and then OK (see below) 
-
-
-#8.  The window will close.  Now right click Policies and choose Refresh
-
-#9.  The newly imported Trustworthy Database Policy exists.  Right click it an choose Evaluate then click Close  (see below) 
-
-
-
-#10. Go back to PowerShell ISE. In the top box type the following: 
-Import-Module sqlps -DisableNameChecking 
-$SQLStatement=” select * from msdb.dbo.syspolicy_policy_execution_history” 
-Invoke-Sqlcmd -Query $SQLStatement -ServerInstance "contoso\sql2012inst1" 
-
-#11.  Why is there a difference between the output in Step #3 and Step #10                                                                                                                                           
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
--a----       21/10/2017     21:35        1133871 M09_SQL_PowerShell_Admin1_EnterprisePermissionAuditing.pptx        
-
-
-
-
-Import-Module sqlps -DisableNameChecking
-Invoke-Sqlcmd -ServerInstance "contoso\sql2012Inst1" -Database AuditDB -InputFile C:\SQLPSClass\Labs\Module_09\CreateAuditTables.sql
-
-$logins = invoke-sqlcmd -ServerInstance "contoso\sql2012Inst1" -Database AuditDB -InputFile C:\SQLPSClass\Labs\Module_09\ServerLogins.sql
-Write-DataTable -TableName "permission.Logins" -ServerInstance "contoso\sql2012Inst1" -Database AuditDB -Data $logins
-
-
-$users =  invoke-sqlcmd -ServerInstance "contoso\sql2012Inst1" -Database AuditDB -InputFile C:\SQLPSClass\Labs\Module_09\DatabaseUsers.sql 
-Write-DataTable -TableName "auditdb.permission.DBUsers" -ServerInstance "contoso\sql2012Inst1" -Database AuditDB -Data $users
-
-
-$Permissions = invoke-sqlcmd -ServerInstance "contoso\sql2012Inst1" -Database AdventureWorks2012 -InputFile "C:\SQLPSClass\Labs\Module_09\ObjectPermission.sql"
-$Permissions
-
-
-Invoke-Sqlcmd -ServerInstance "contoso\sql2012Inst1" -Database AuditDB -Query "restore filelistonly from disk = 'C:\Temp\AdventureWorks2012.bak'"
-
-Set-Location = c:\temp
-
-
-$RelocateData = New-Object Microsoft.SqlServer.Management.Smo.RelocateFile("AdventureWorks2012", "C:\temp\AdventureWorks2012.mdf")
-$RelocateLog = New-Object Microsoft.SqlServer.Management.Smo.RelocateFile("AdventureWorks2012_log", "C:\temp\AdventureWorks2012.ldf")
-
-Restore-SqlDatabase -ServerInstance "contoso\sql2012Inst1" -Database AdventureWorks2012 -RestoreAction Database -BackupFile C:\Temp\AdventureWorks2012.bak `
-                    -RelocateFile @($RelocateData,$RelocateLog) -Verbose 
-
-
-Task 9.1.5 Create permission audit solution for enterprise environment 
-1. To audit all SQL Servers, we will need to make the script created in previous task generic by adding ______. How many ______ should be added so this script can be used against any SQL Server instance and store audit data in any SQL Server instance?  
- 
-  2. Add parameters $AuditComputerName and $AuditDBSvr to the script and update the script 3. Test your script by calling running: C:\SQLPSClass\Labs\Module_09\AuditPerm.ps1 -AuditCompuerName Contoso\SQL2012Inst1 -AuditDBSvr Contoso\SQL2012Inst1 4. To make AuditComputerName and AuditDBSvr parameters mandatory, what needed to be added: 
- 
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
--a----       21/10/2017     21:35         830442 M10_SQL_PowerShell_Admin1_PerformanceBenchMarking.pptx                                                                                                                                                          
-
-$profile
-#C:\Users\Administrator\Documents\WindowsPowerShell\Microsoft.PowerShellISE_profile.ps1
-C:\Users\Administrator\Documents\WindowsPowerShell\Microsoft.PowerShellISE_profile.ps1
-
-#Exercise 10.1: Get-Counter 
+#Exercise 13.1: Description Work with Regular Expressions 
 #Objectives  
-#In this exercise, we will learn how to use Get-Counter to collect performance counter data for SQL Server. • Get Counter Set • Get Counter 
-#Scenario  Use Get-Counter to collect performance counters for SQL Server environment 
-#Prerequisites    None
+#In this exercise, we will learn to use Regular Expressions in PowerShell. 
+#After completing this lab, you will be able to: 
+    #• Understand Regular Expression 
+    #• Use Regular Expression to match strings and numbers 
+
+#Scenario 
+
+#You are creating a monitoring solution for all your production server and collecting information like CPU and RAM. 
+#Prerequisites  
+    #Not Applicable 
 
 
-
-
-#Task 10.1.1 List Counter Set 
-#1. Run following command: 
-
-Get-Counter -Listset * 
-
-#2. To just display counter set name, enter following command: 
-Get-Counter -Listset * | Select CounterSetName 
-
-#3. Construct a pipeline to show the CounterSetName that contains key word SQL: 
-
-Get-Counter -ListSet *SQL* | select CounterSetName
-
-
-
-
-
-#Task 10.1.2 List Counters 
-#1. Enter following command: 
-
-Get-Counter -Listset * -ComputerName Contoso | ` 
-Select CounterSetName, Description | Format-Table -AutoSize 
+#Task 1. An example of a SQL Server 2012 error log entries: 
+2015-12-03 08:19:07.84 Server      SQL Server detected 1 sockets with 1 cores per socket and 1 logical processors per socket, 1 total logical processors; 
+using 1 logical processors based on SQL Server licensing. This is an informational message; no user action is required. 
+2015-12-03 08:19:07.84 Server      Detected 2045 MB of RAM. This is an informational message; no user action is required. 
  
-#2. What is the CounterSet for SQL Server buffer manager performance counter?? 
-(Get-Counter -ListSet '*MSSQL$SQL2012INST1:Buffer Manager*').counter
-PS C:\> (Get-Counter -ListSet '*MSSQL$SQL2012INST1:Buffer Manager*').counter
-    \MSSQL$SQL2012INST1:Buffer Manager\Buffer cache hit ratio
-    \MSSQL$SQL2012INST1:Buffer Manager\Page lookups/sec
-    \MSSQL$SQL2012INST1:Buffer Manager\Free list stalls/sec
-    \MSSQL$SQL2012INST1:Buffer Manager\Database pages
-    \MSSQL$SQL2012INST1:Buffer Manager\Target pages
-    \MSSQL$SQL2012INST1:Buffer Manager\Integral Controller Slope
-    \MSSQL$SQL2012INST1:Buffer Manager\Lazy writes/sec
-    \MSSQL$SQL2012INST1:Buffer Manager\Readahead pages/sec
-    \MSSQL$SQL2012INST1:Buffer Manager\Page reads/sec
-    \MSSQL$SQL2012INST1:Buffer Manager\Page writes/sec
-    \MSSQL$SQL2012INST1:Buffer Manager\Checkpoint pages/sec
-    \MSSQL$SQL2012INST1:Buffer Manager\Background writer pages/sec
-    \MSSQL$SQL2012INST1:Buffer Manager\Page life expectancy
-
-
-
-#3. Enter following command: 
-Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager' 
+#Below is the common Regular Expression operators: 
+#Operator - Logic 
+#[value] - Exact characters anywhere in original value 
+#[.] Any single character, except newline 
+#[value] At least one character in brackets 
+#[range] At least one character within range 
+#[^] Beginning character(s) 
+#[$] End character(s) 
+#[\w] Any word character 
+#[\d] Any decimal digit 
+#[*] Zero or more {0,} 
+#[+] One or more {1,} 
+#[?] Zero or one {0,1} 
+#[{n}] Exactly n matches 
+#[{n,}] At least n matches 
+#[{n,m}] At least n, but no more than m, matches 
  
-#4. Run following command to get multiple counter set names 
-Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager', 'MSSQL$SQL2012Inst1:Locks' 
- 
-#5. Run following command to get complete list of multiple counter set: 
-(Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager','MSSQL$SQL2012Inst1:Locks').Counter 
- 
-#6. Construct a pipeline shows the total number of counters based on the output of previous step: 
-(Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager','MSSQL$SQL2012Inst1:Locks').Counter | Measure-Object
-
-
-
-
-#Task 10.1.3 Collect Counter Values 
-
-#1. Enter following command: 
-Get-Counter -Counter ‘\MSSQL$SQL2012Inst1:buffer manager\page life expectancy’ 
- 
-#2. What is the command to collect previous counter 3 times with 2 seconds interval? 
-Get-Counter -Counter ‘\MSSQL$SQL2012Inst1:buffer manager\page life expectancy’ -SampleInterval 2 -MaxSamples 3
-
-#TIP: Use Get-Help to get Get-Counter parameters 
-get-help Get-Counter
-
-
-#3. Enter following command: 
-Get-Counter -Counter '\MSSQL$SQL2012Inst1:buffer manager\page life expectancy' ,` '\MSSQL$SQL2012Inst1:locks(_total)\lock requests/sec' ` -SampleInterval 2 -MaxSamples 3 
- 
-#4. Construct a pipeline to collect all the counters in 'MSSQL$SQL2012Inst1:Buffer Manager' counter set 3 times at 2 seconds interval
-(Get-Counter -ListSet 'MSSQL$SQL2012Inst1:Buffer Manager').counter | Get-Counter -SampleInterval 2 -MaxSamples 3
-
-
-
-
-
-
-#Exercise 10.2: Add-SqlTable, Out-DataTable & WriteDataTable 
-#Objectives  
-#In this exercise, we will use Add-SqlTable, Out-DataTable and Write-DataTable to create a performance monitoring solution.  • Scope • Dot-source Notation 
-#Scenario  Use Add-SqlTable, Out-DataTable and Write-DataTable build a complete solution. Prerequisites 
- 
-#Task 10.2.1 Install Script Browser 
-
-#1. If virtual machine has internet access skip to step #4. 
-#2. Copy all the files from C:\SQLPSClass\Labs\Module_10\Backup\ folder to C:\SQLPSClass\Labs\Module_10\. 
-#3. Skip to step #18. 
-#4. Script Browser is an addon for Windows PowerShell ISE. This addon will allow us to search scripts in TechNet Script Gallery Center from within ISE environment.  
-#5. Close all open ISE windows 
-#6. We can find the modules published on the Script Gallery using Find-Module. 
-#7. Launch PowerShell Console using Run as Admin and enter following command and execute it: PS C:\> Find-Module ScriptBrowser
-#8. Now let’s install the module using Install-Module. PS C:\> Install-Module ScriptBrowser 
-#9. You’ll get the following message, enter “Y” for download & install.  
-#10. After installation, open a new ISE under administrator privilege 
-#11. In a new script window enter following commands: 
-    Enable-ScriptAnalyzer 
-    Enable-ScriptBrowser 
-#12. In the search box near top, enter "Add-SqlTable" and press <Enter> button
-#13. Double click on "Add-SqlTable" in the "Search Results"  
-#14. Click on "Select All" button under "Script Snippet" 
-#15. Click on "Open" button 16. Save the new script as "Add-SqlTable.ps1" under C:\SQLPSClass\Labs\Module_10 
-#17. Repeat steps from Step 6 to Step 10 for "Out-DataTable" and "Write-DataTable" and name them as "Out-DataTable.ps1" and "Write-DataTable" respectively. 
-
-#18. Enter following command in ISE windows and execute: . 
-
-C:\SQLPSClass\Labs\Module_10\Out-DataTable $d = Get-Counter ‘\MSSQL$SQL2012INST1:buffer manager\page life expectancy’| ` Out-DataTable 19. 
-
-#What is the result?
-
-#20. What is reason for this result? 
-
-
-
-#Task 10.2.2 Add-SqlTable & Write-DataTable 
-
-#1. Enter following command in ISE window: 
-
-Import-Module SQLPS -DisableNameChecking 
- 
-.\C:\SQLPSClass\Labs\Module_10\Add-SqlTable.ps1 
-.\C:\SQLPSClass\Labs\Module_10\Out-DataTable.ps1 
-.\C:\SQLPSClass\Labs\Module_10\Write-DataTable.ps1 
- 
-$data = ((Get-Counter -ListSet 'MSSQL$SQL2012INST1:Buffer Manager' `
--ComputerName Contoso).Counter | `
-Get-Counter).CounterSamples |`
-Select-Object TimeStamp, Path, CookedValue  |`
-Out-DataTable 
- 
-#Explain the dot sign before C:\SQLPSClass\Labs\Module_10\Add-SqlTable.ps1, what would happen if the dot is removed: 
+#Which operator should we use to match the number in "1 total logical processors"? 
  
  
-#2. In the execution pane, enter $data and review the result 
-
-#3. Open a new PowerShell console and enter $data, what is the result? 
+#2. Now enter the following command in Windows PowerShell console: 
+$LogFile = "E:\MSSQL11.SQL2012INST1\MSSQL\Log\ERRORLOG" 
+$LogMsg = Get-Content $LogFile 
+[Regex]::Match($LogMsg, "\d+ total logical processors") 
  
  
-#4. Open SQL Server Management Studio and run following TSQL to create a new database named PerfCol: Create Database PerfCol 
+#3. Review the result. Construct a pipeline that shows the output object and its properties: ____________________________________________________________________   
  
-#5. Go back to previous ISE and enter following command:  
-
-Get-Help Add-SqlTable 
-
+#4. Check your answer. Now enter the following command in Windows PowerShell console: 
+$LogFile = "E:\MSSQL11.SQL2012INST1\MSSQL\Log\ERRORLOG" 
+$LogMsg = Get-Content $LogFile 
+[Regex]::Match($LogMsg, "\d+ total logical processors")|Get-Member 
  
-#Review the command syntax and construct a command that will create "PerfValue" table in "PerfCol" database in Contoso\SQL2012INST1 instance using $data: 
+  
  
-#6. Does previous command succeed? True / False 
-#7. What is the command to see the data type of $data: 
+#5. To be able to get the number value, we will need to use Groups property. Construct a pipeline that will show just the number value of previous step: 
+  
+#6. To match "Detected 2045 MB of RAM", create a pattern to capture the size (number) of RAM: ____________________________________________________________ 
+#7. Write the Regular Expression pattern to match the messages on the left: 
+Port number:  
+String: <ipv4> 1433                 Expected value: 1433 
+____________________________________________________________________ 
  
- 
-#8. What is the data type of $data: 
- 
- 
-#9. Use SQL Server Management Studio and verify the table has been created: True / False 
-#10. Does this table contain any data? True / False 
-#11. To populate PermValue table with data, Write-DataTable command can be used for this purpose. Use Get-Help to review the syntax of Write-DateTable and construct the command for this purpose: 
- 
-#12. Save the finished script as PerfCol.ps1 under C:\SQLPSClass\Labs\Module_10\  
- 
+Authentication mode: 
+Authentication mode is MIXED      Expected Value: MIXED 
+____________________________________________________________________ 
 
 
-#Task 10.2.3 Optional – Implement a performance monitoring solution 
-#1. You're given a task to implement a performance monitoring solution for your SQL Server environment: 
-#• The counters are provided in C:\SQLPSClass\Labs\Module10\PerfCounters.txt 
-#• The servers are being monitored is CONTOSO\SQL2012INST1 
-
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
--a----       21/10/2017     21:35         226216 M11_SQL_PowerShell_Admin1_SMO.pptx    
-
-STAIRWAY TO SMO
-http://www.sqlservercentral.com/articles/SMO/140966/   
-
-ACCESSING SQL SERVER FROM POWERSHELL
-https://www.red-gate.com/simple-talk/sql/database-administration/the-posh-dba-accessing-sql-server-from-powershell/                                                                                                                                                                       
-
-
-#Module 11: SQL Server Management Objects (SMO)  
-#Student Lab Manual  
-
-<#
-
-Module 11 Lab Objectives  In this exercise, you will:  
-• Utilize SMO to work with SQL Server Databases 
-• Utilize SMO to work with a SQL Server Instance Scenario   
-You want to get the database data file and log file names of the databases.  
-You want to determine what drives or mount points the database files reside in the event you need to resolve a space issue.  
-The second part of this lab will allow you to retrieve information about the Instance.  
-Changing instance settings will be covered in more detail in a later lab. 
-Prerequisites   
-None 
-Virtual Machine Details 
-• Virtual Machine Name:Contoso 
-• Login Username:Contoso\Administrator 
-• Login Password: Password1 
-
-Estimated Time to Complete These Lab’s  30 minutes 
- 
-#>
-
-
-#Task 1. On your workstation go to Start   and type PowerShell ISE and press Enter. (See Below) 
+#8. What is the command to list all the 'server' messages? Write down the command below: 
  
  
+#9. What is the command to list all the messages except for 'Backup' messages? Write down the command below: 
  
-#2. In the top box type the following: 
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExt ended')  | out-null  
-$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("Contoso\SQL2012Inst1")  
-$db = New-Object Microsoft.SqlServer.Management.Smo.Database  
-$db = $srv.Databases.Item("AdventureWorks2012")  
  
-Foreach ($lf in $db.LogFiles)  {     $lf.Name  
-   $lf.filename  }
-
-
-#3. Now let’s create a new database called SMO_Database using SMO. 
-#In the top box type the following: 
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExt ended')  | out-null  
-$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1") 
-$dbname = 'SMO_Database_lab'  
-$db = new-object Microsoft.SqlServer.Management.Smo.Database ($srv,$dbname)  
-$db.Create()  
-
-
-#4. Create a script to list all databases 
-
-$SMOSrv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1")
-$SMOSrv.Databases
-
-#5. Do you see SMO_Database listed?
-yes
+#10. Construct a pipeline to return messages between 8PM to 10PM yesterday? 
+#Note: In Windows PowerShell, an array might contain different types. 
 
 
 
-#Exercise 11.2: Utilize SMO to work with a SQL Server Instance 
+ 
+ <#
 
-#2. In the top box type the following: 
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExtend ed')  | out-null  
-
-$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1")  
-$srv.ErrorLogPath
-#C:\Program Files\Microsoft SQL Server\MSSQL11.SQL2012INST1\MSSQL\Log
-
-
-#3. In the top box type the following: 
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExtend ed')  | out-null  
-
-$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1")  
-$srv.Collation  
-
-#Latin1_General_CI_AS
-
-
-#4. Let’s convert a SMO URN to a URN Path. In the top box type the following: 
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')  | out-null  
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMOExtend ed')  | out-null  
-$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("contoso\sql2012inst1")  
-$SMO_URN=$srv.urn  
-# Now let’s covert it to a path  
-$URN_Path=Convert-UrnToPath –urn $SMO_URN  
-write-host "The URN Path is:" $URN_Path  
-#The URN Path is: SQLSERVER:\SQL\CONTOSO\SQL2012INST1 
-
-
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
--a----       21/10/2017     21:35         492271 M12_SQL_PowerShell_Admin1_ConfiguringSQLServer.pptx              
-
-
-#Module 12: Configuring SQL Server 
-
-<#
-Exercise 12.1: Change SQL Server Authentication Mode 
+ Exercise 13.3: Description Traversing System Event Log 
 Objectives  
-SQL Server Authentication Mode can be changed in SQL Server Management Studio manually. This setting isn't available in SQL Server configuration and cannot be changed using TSQL.  
-In this exercise, we will learn to SQLPS and SMO to change SQL Server Authentication mode. 
-After this exercise, you will be able to  • Change SQL Server authentication mode using SQLPS • Change SQL Server authentication mode using SMO 
+In this exercise, we will learn to use traverse the System Event Log. After completing this lab, you will be able to: • Traverse the System Event Log 
 Scenario 
-Change Microsoft SQL Server authentication mode programmatically. Prerequisites  None 
-#>
+A user calls and states the database is giving an error.  This lab will show you how to look for “error” in the System Event Log Prerequisites  
+Not Applicable
+ #>
 
-#Task 12.1.1 Change SQL Server authentication mode using SQLPS 
 
+#Task 
 #1. On your workstation go to Start   and type PowerShell ISE and press Enter. 
-#The PowerShell ISE opens and you will see the three parts of it. (See Below) 
-
-#2. In Windows PowerShell console, enter following commands and review their output: 
-
-Import-Module SQLPS -DisableNameChecking 
-Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1 | Get-Member 
-Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1 | Select ServiceName, LoginMode, Status
-
-#3. Run following command to change SQL Server authentication: 
-
-$localinstance = Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1 
-$localinstance.LoginMode = "Mixed" 
-$localinstance.Alter() 
-$localinstance.Refresh() 
-
-#4. Verify the authentication mode using following command:  
-(Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1).LoginMode   
-
-#You can also SQL Server Management Studio to verify whether the authentication mode has been changed:
-
-
-#Task 12.1.2 Change SQL Server authentication using SMO 
-
-#1. To be able to use SMO, you can use following command to load the assembly:  
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO') 
-
-
-#2. Running this command will also show information message, construct a pipeline that will suppress the information message: 
  
-#3. After loading SMO assembly, you will need to initialize a server variable: 
-$sql = new-object ('Microsoft.SqlServer.Management.Smo.Server')'Contoso\SQL2012Inst1' 
-#Use Get-Member to view the members of $sql: 
-$sql | Get-Member 
+#2. In the top box type the following: 
+Get-EventLog -logname "System" -message "*error*" 
+
+#and then press the F5 or   to execute the command. (See below) 
  
-#4. Use settings property to view $sql's settings: 
-$sql.Settings 
-
-
-#5. To view LoginMode of $sql, run following command: 
-$sql.LoginMode   
+#14    Lab 13: Error Log Monitoring 
  
-#6. To view the type of Microsoft.SqlServer.Management.SMO.ServerLoginMode, you can use GetType() method: 
-$sql.LoginMode.GetType() 
-#What is the base type for LoginMode? 
-
-#7. System.Enum is a type that have a list of values. To be able to view the values, you can use following command: 
-[System.Enum]::GetValues([Microsoft.SqlServer.Management.SMO.ServerLoginMode]) 
  
-#What is the values for LoginMode:
-#Normal
-#Integrated
-#Mixed
-#Unknown 
+#Note:  This brings back the rows with the word Error in System Event Log. 
  
-#8. To change SQL Server login mode to SQL Server login, fill in the blank for the following command: 
-$sql.LoginMode = [Microsoft.SqlServer.Management.SMO.ServerLoginMode]::normal  #normal 
- 
-#9. Or you can also use ISE Intellisense by entering following in execution pane: 
-([Microsoft.SqlServer.Management.SMO.ServerLoginMode])::Normal
-
-#An Intellisense windows will popup and show the possible values. Or you can use 'TAB' key to tab through the members. 
-
-#10. Now we need to enable SA login by running following commands: 
-Invoke-Sqlcmd "Alter Login [sa] enable" -ServerInstance Contoso\SQL2012Inst1 
-Invoke-SqlCmd "Alter Login [sa] With password ='Password1'"  -ServerInstance Contoso\SQL2012Inst1 
- 
-#11. To apply the change, run following command: 
-$sql.Alter() 
- 
-#12. To make the new LoginMode effective, SQL Server will need to be restarted: 
-Restart-Service -Name 'MSSQL$SQL2012INST1' -Force
-
-Get-Service -Name 'MSSQL$SQL2012INST1'
-
- 
-#13. Try login into SQL Server as sa and verify if Mixed LoginMode is effective: 
-Invoke-Sqlcmd -Username sa -Password Password1 -Query "Select @@ServerName" -ServerInstance Contoso\SQL2012Inst1
-
-
-
-<#
-Exercise 12.2: Managing SQL Server Configuration  
-Objectives  
-In this exercise, we will learn to SQL Server Configuration programmatically. 
-After completing this exercise, you will be able to  • Use SQLPS to view and update SQL Server configuration • Use SMO to view and update SQL Server configuration 
-Scenario  Update MAXDOP setting on CONTOSO\SQL2012INST1. Prerequisites  None
-#>
-
-#Task 12.2.1 Managing SQL Server configuration using SQLPS 
-#1. To view SQL Server configuration values, run following command: 
-$server = Get-Item SQLServer:\SQL\CONTOSO\SQL2012INST1  
-$server.Configuration.Properties | ` 
-Format-Table DisplayName, RunValue, ConfigValue, Minimum, Maximum 
- 
-#Review the result and find the property name for MAXDOP: 
- 
-#2. Run following command: 
-$server.Configuration.MaxDegreeOfParallelism.ConfigValue = 4 
-$server.Configuration.MaxDegreeOfParallelism
-
-#3. Construct a command that shows MAXDOP setting. 
-$server.Configuration.MaxDegreeOfParallelism
-#Did MAXDOP running value change? 
-#No 
-
-#4. To change MAXDOP configuration, run following command: 
-$server.Configuration.Alter() 
-
-#5. Did MAXDOP running value change this time? 
-
-$server.Configuration.MaxDegreeOfParallelism
-#Yes                                                                                                                                               
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
--a----       21/10/2017     21:35         654072 M13_SQL_PowerShell_Admin1_ErrorLogMonitoring.pptx     
-
------------------------------------------------------------------------------------------------------------------------------------------------------- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-####################### 
-<# 
-.SYNOPSIS 
-Writes data only to SQL Server tables. 
-.DESCRIPTION 
-Writes data only to SQL Server tables. However, the data source is not limited to SQL Server; any data source can be used, as long as the data can be loaded to a DataTable instance or read with a IDataReader instance. 
-.INPUTS 
-None 
-    You cannot pipe objects to Write-DataTable 
-.OUTPUTS 
-None 
-    Produces no output 
-.EXAMPLE 
-$dt = Invoke-Sqlcmd2 -ServerInstance "Z003\R2" -Database pubs "select *  from authors" 
-Write-DataTable -ServerInstance "Z003\R2" -Database pubscopy -TableName authors -Data $dt 
-This example loads a variable dt of type DataTable from query and write the datatable to another database 
-.NOTES 
-Write-DataTable uses the SqlBulkCopy class see links for additional information on this class. 
-Version History 
-v1.0   - Chad Miller - Initial release 
-v1.1   - Chad Miller - Fixed error message 
-.LINK 
-http://msdn.microsoft.com/en-us/library/30c3y597%28v=VS.90%29.aspx 
-#> 
-function Write-DataTable 
-{ 
-    [CmdletBinding()] 
-    param( 
-    [Parameter(Position=0, Mandatory=$true)] [string]$ServerInstance, 
-    [Parameter(Position=1, Mandatory=$true)] [string]$Database, 
-    [Parameter(Position=2, Mandatory=$true)] [string]$TableName, 
-    [Parameter(Position=3, Mandatory=$true)] $Data, 
-    [Parameter(Position=4, Mandatory=$false)] [string]$Username, 
-    [Parameter(Position=5, Mandatory=$false)] [string]$Password, 
-    [Parameter(Position=6, Mandatory=$false)] [Int32]$BatchSize=50000, 
-    [Parameter(Position=7, Mandatory=$false)] [Int32]$QueryTimeout=0, 
-    [Parameter(Position=8, Mandatory=$false)] [Int32]$ConnectionTimeout=15 
-    ) 
-     
-    $conn=new-object System.Data.SqlClient.SQLConnection 
- 
-    if ($Username) 
-    { $ConnectionString = "Server={0};Database={1};User ID={2};Password={3};Trusted_Connection=False;Connect Timeout={4}" -f $ServerInstance,$Database,$Username,$Password,$ConnectionTimeout } 
-    else 
-    { $ConnectionString = "Server={0};Database={1};Integrated Security=True;Connect Timeout={2}" -f $ServerInstance,$Database,$ConnectionTimeout } 
- 
-    $conn.ConnectionString=$ConnectionString 
- 
-    try 
-    { 
-        $conn.Open() 
-        $bulkCopy = new-object ("Data.SqlClient.SqlBulkCopy") $connectionString 
-        $bulkCopy.DestinationTableName = $tableName 
-        $bulkCopy.BatchSize = $BatchSize 
-        $bulkCopy.BulkCopyTimeout = $QueryTimeOut 
-        $bulkCopy.WriteToServer($Data) 
-        $conn.Close() 
-    } 
-    catch 
-    { 
-        $ex = $_.Exception 
-        Write-Error "$ex.Message" 
-        continue 
-    } 
- 
-} #Write-DataTable
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
