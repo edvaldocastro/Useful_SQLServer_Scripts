@@ -1,2 +1,7 @@
 # Useful_SQLServer_Scripts
-Here I use to share simple scripts for day-to-day use of SQL Server administration
+I use this space to store and share my daily scripts.
+Simple but it prevents me from rewrite them everytime I need it in hand.
+
+Fell free to use, and share it.
+
+Edvaldo Castro
