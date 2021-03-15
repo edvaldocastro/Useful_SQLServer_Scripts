@@ -6,7 +6,7 @@ declare @FinishSearchingDate datetime = getdate()
    join msdb..backupmediafamily bmf
      on bs.media_set_id = bmf.media_set_id
   where 1=1 
-  --and database_name = 'master'
+    and database_name = 'master'
     and bs.type in ('D','I','L')
     and bs.backup_finish_date between @startSearchingDate and @FinishSearchingDate
   order by bs.backup_finish_date desc
