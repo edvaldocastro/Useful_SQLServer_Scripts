@@ -1,3 +1,4 @@
+
 /*******************************************************************************
 *
 * Created 2017-06-16 By Philip C
@@ -73,7 +74,7 @@ WHILE(@@FETCH_STATUS=0)BEGIN
 *   Generates the code to update the columns colation                                                                               *
 ************************************************************************************************************************************/
   INSERT INTO #tempscriptstore(ScriptType, script)
-  SELECT DISTINCT 'AlterCollation', 'ALTER TABLE '+QUOTENAME(t.name)+' ALTER COLUMN '+QUOTENAME(c.name)+' '+CASE WHEN ty.name='ntext' THEN ty.name+' COLLATE '+@DatabaseCollation+' ' ELSE ty.name+'('+CASE WHEN c.max_length=-1 THEN 'MAX' ELSE CASE WHEN ty.name='nvarchar' THEN CAST(c.max_length / 2 AS VARCHAR(20))ELSE CAST(c.max_length AS VARCHAR(20))END END+') COLLATE '+@DatabaseCollation+' ' END+CASE WHEN c.is_nullable=1 THEN 'NULL;' ELSE 'NOT NULL;' END
+  SELECT DISTINCT 'AlterCollation', 'ALTER TABLE '+QUOTENAME(@SchemaName)+'.'+QUOTENAME(t.name)+' ALTER COLUMN '+QUOTENAME(c.name)+' '+CASE WHEN ty.name='ntext' THEN ty.name+' COLLATE '+@DatabaseCollation+' ' ELSE ty.name+'('+CASE WHEN c.max_length=-1 THEN 'MAX' ELSE CASE WHEN ty.name='nvarchar' THEN CAST(c.max_length / 2 AS VARCHAR(20))ELSE CAST(c.max_length AS VARCHAR(20))END END+') COLLATE '+@DatabaseCollation+' ' END+CASE WHEN c.is_nullable=1 THEN 'NULL;' ELSE 'NOT NULL;' END
   FROM sys.columns c
       INNER JOIN sys.tables t ON c.object_id=t.object_id
       INNER JOIN sys.types ty ON c.system_type_id=ty.system_type_id
@@ -347,9 +348,4 @@ FROM #tempscriptstore
 WHERE script !=''
 ORDER BY exec_order ASC;
 DROP TABLE #tempscriptstore;
-
-Kind regards, 
-
-Everton Oliveira | Cloud Solutions Architect - Data | IT Department | 019451165
- 
 
