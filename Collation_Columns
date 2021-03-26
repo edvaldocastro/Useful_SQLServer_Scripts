@@ -332,7 +332,7 @@ DEALLOCATE collationfix;
 /************************************************************************************************************************************
 *   Returns all the created scripts in the correct order for running                                                                *
 ************************************************************************************************************************************/
-SELECT DISTINCT script, CASE WHEN ScriptType='DropForeignKey' THEN 1
+SELECT DISTINCT 'USE '+DB_NAME()+'; ',script, CASE WHEN ScriptType='DropForeignKey' THEN 1
             WHEN ScriptType='DropPrimaryKey' THEN 2
             WHEN ScriptType='DropUniqueKey' THEN 3
             WHEN ScriptType='DropIndex' THEN 4
