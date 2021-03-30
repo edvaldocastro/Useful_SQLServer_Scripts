@@ -1,0 +1,21 @@
+--save it on git hub
+SET NOCOUNT ON
+SELECT s.name as 'Schema_Name', t.name as Table_Name,
+c.name AS Column_Name,
+st.name,
+c.max_length,
+c.collation_name AS Collation,
+'ALTER TABLE ['+s.name+'].['+t.name+'] ALTER COLUMN ['+c.name+'] '+st.name+'('+cast(c.max_length as varchar(10))+') COLLATE SQL_Latin1_General_CP1_CI_AS;'+char(13)+'GO'
+FROM sys.schemas s
+INNER JOIN sys.tables t
+ON t.schema_id = s.schema_id
+INNER JOIN sys.columns c
+ON c.object_id = t.object_id
+INNER JOIN sys.types st
+ON c.system_type_id = st.system_type_id
+WHERE c.collation_name is not null
+and c.collation_name <> 'SQL_Latin1_General_CP1_CI_AS'
+and st.name in ('nvarchar','varchar','char')
+--and c.name = 'APUHR'
+--and cast(c.max_length as varchar(10)) not like '%-1%'
+ORDER BY c.max_length
