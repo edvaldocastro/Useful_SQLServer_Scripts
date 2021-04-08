@@ -1,13 +1,53 @@
+/*
+	This script will generate a resultset of all permissions on a given database (the one on which context it runs) 
+	and generate the t-sql commands in case it needs to be re issued later.
+*/
+
 SELECT  
-	  princ.type_desc								  as member_description
-	, princ.name									  as member_principal_name 
-    , LOWER(STRING_AGG(perm.[permission_name], ', ')) COLLATE SQL_Latin1_General_CP1_CI_AS as db_permissions
-	, A.role_principal_name							  as role_assigned
-	, perm.state_desc								  as state_desc
-	, perm.class_desc								  as object_type
-	, COALESCE(s.name, SCHEMA_NAME(obj.schema_id))	  as schema_name
-    , OBJECT_NAME(perm.major_id)					  as object_name
-    , col.[name]									  as column_name
+		DB_NAME()
+	,  princ.type_desc								  as 'member_description'
+	, princ.name									  as 'member_principal_name' 
+    , LOWER(STRING_AGG(perm.[permission_name], ', ')) COLLATE SQL_Latin1_General_CP1_CI_AS as 'db_permissions'
+	, A.role_principal_name							  as 'role_assigned'
+	, perm.state_desc								  as 'state_desc'
+	, perm.class_desc								  as 'object_type'
+	, COALESCE(s.name, SCHEMA_NAME(obj.schema_id))	  as 'schema_name'
+    , OBJECT_NAME(perm.major_id)					  as 'object_name'
+    , col.[name]									  as 'column_name'
+	, CASE
+		WHEN	a.role_principal_name IS NOT NULL 
+		THEN 'ALTER ROLE ['+a.role_principal_name+'] ADD MEMBER ['+princ.name+']'
+		WHEN	a.role_principal_name IS NULL 
+			AND perm.class_desc = 'SCHEMA' 
+			AND perm.state_desc = 'GRANT'
+		THEN 'GRANT '+UPPER(STRING_AGG(perm.[permission_name], ', ')) COLLATE SQL_Latin1_General_CP1_CI_AS+' ON SCHEMA :: '+COALESCE(s.name, SCHEMA_NAME(obj.schema_id))+' TO '+princ.name
+		WHEN	a.role_principal_name IS NULL 
+			AND perm.class_desc = 'OBJECT_OR_COLUMN' 
+			AND perm.state_desc = 'GRANT'
+		THEN 'GRANT '+UPPER(STRING_AGG(perm.[permission_name], ', ')) COLLATE SQL_Latin1_General_CP1_CI_AS+' ON ['+COALESCE(s.name, SCHEMA_NAME(obj.schema_id))+'].['+OBJECT_NAME(perm.major_id)+'] TO ['+princ.name+']'
+		WHEN	a.role_principal_name IS NULL 
+			AND perm.class_desc = 'OBJECT_OR_COLUMN' 
+			AND perm.state_desc = 'DENY'
+		THEN 'DENY '+UPPER(STRING_AGG(perm.[permission_name], ', ')) COLLATE SQL_Latin1_General_CP1_CI_AS+' ON ['+COALESCE(s.name, SCHEMA_NAME(obj.schema_id))+'].['+OBJECT_NAME(perm.major_id)+'] TO ['+princ.name+']'
+		WHEN	a.role_principal_name IS NULL 
+			AND perm.class_desc = 'DATABASE'
+			AND s.name IS NULL
+            AND OBJECT_NAME(perm.major_id) IS NULL
+			AND col.[name] IS NULL
+			AND perm.state_desc = 'GRANT'
+		THEN 'GRANT '+UPPER(STRING_AGG(perm.[permission_name], ', ')) COLLATE SQL_Latin1_General_CP1_CI_AS+' TO ['+princ.name+']'
+
+
+
+	  END
+
+	
+	
+	as 'command'
+
+
+
+
 FROM sys.database_principals princ  
 	LEFT JOIN sys.database_permissions perm ON perm.[grantee_principal_id] = princ.[principal_id]
 	LEFT JOIN sys.schemas s					ON s.schema_id = perm.major_id
@@ -35,3 +75,6 @@ group by  princ.type_desc
 		, perm.major_id
 		, perm.class_desc
 		, perm.state_desc;
+
+
+
