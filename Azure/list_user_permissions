@@ -36,18 +36,7 @@ SELECT
 			AND col.[name] IS NULL
 			AND perm.state_desc = 'GRANT'
 		THEN 'GRANT '+UPPER(STRING_AGG(perm.[permission_name], ', ')) COLLATE SQL_Latin1_General_CP1_CI_AS+' TO ['+princ.name+']'
-
-
-
-	  END
-
-	
-	
-	as 'command'
-
-
-
-
+	  END AS 'command'
 FROM sys.database_principals princ  
 	LEFT JOIN sys.database_permissions perm ON perm.[grantee_principal_id] = princ.[principal_id]
 	LEFT JOIN sys.schemas s					ON s.schema_id = perm.major_id
@@ -75,6 +64,3 @@ group by  princ.type_desc
 		, perm.major_id
 		, perm.class_desc
 		, perm.state_desc;
-
-
-
