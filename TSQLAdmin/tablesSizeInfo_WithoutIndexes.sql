@@ -13,7 +13,8 @@ select s.name as 'SchemaName',
 			when 1 then 'Not Partitioned'
 			else 'Partitioned'
 	   end as 'IsTablePartitioned', 
-	   p.data_compression_desc as 'DataCompressionType'
+	   p.data_compression_desc as 'DataCompressionType',
+	   'alter table ['+s.name+'].['+t.name+'] rebuild with (data_compression=page)'	   
 	   --'select * from '+s.name+'.'+t.name
   from sys.tables t
   join sys.indexes i 
