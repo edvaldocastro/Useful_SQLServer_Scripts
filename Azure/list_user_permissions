@@ -55,6 +55,7 @@ FROM sys.database_principals princ
 				) A ON princ.name collate SQL_Latin1_General_CP1_CI_AS = A.member_principal_name
 WHERE princ.[type] IN ('E','S','X')
   and princ.principal_id > 4
+  --AND princ.name IN ('')
 group by  princ.type_desc
 		, princ.name
 		, a.role_principal_name
