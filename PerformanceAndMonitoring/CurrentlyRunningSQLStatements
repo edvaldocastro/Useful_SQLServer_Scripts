@@ -3,7 +3,8 @@ SELECT [Spid] = session_id,
        SUBSTRING(CAST(percent_complete AS VARCHAR(10)), 1, 5) + ' %' AS 'percent_complete',
        --	, cast(datediff(MM,start_time,getdate()) as varchar(100))+':'+substring(cast(datediff(SS,start_time,getdate()) as varchar(100)) 
        CAST(DATEDIFF(MINUTE, start_time, GETDATE()) / 60 AS VARCHAR(100)) + ':'
-       + CAST(DATEDIFF(MINUTE, start_time, GETDATE()) % 60 AS VARCHAR(100)) AS 'elapsed_time (hh:mm)',
+       + CAST(DATEDIFF(MINUTE, start_time, GETDATE()) % 60 AS VARCHAR(100)) AS 'elapsed_time (h:m)',
+       DATEDIFF(MINUTE, start_time, GETDATE()) AS 'elapsed_time (m)',
        total_elapsed_time,
        [Database] = DB_NAME(sp.dbid),
        [User] = nt_username,
@@ -31,4 +32,5 @@ FROM sys.dm_exec_requests er
     CROSS APPLY sys.dm_exec_sql_text(er.sql_handle) AS qt
 WHERE session_id > 50 -- Ignore system spids.
       AND session_id NOT IN ( @@SPID ) -- Ignore this current statement.
-ORDER BY 1,2;
+ORDER BY 1,
+         2;
