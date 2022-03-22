@@ -1,5 +1,6 @@
 SELECT [Spid] = session_Id
 	, ecid
+	--, substring(cast(percent_complete as varchar(10)),1,5)+' %' as 'percent_complete'
 	, [Database] = DB_NAME(sp.dbid)
 	, [User] = nt_username
 	, [Status] = er.status
