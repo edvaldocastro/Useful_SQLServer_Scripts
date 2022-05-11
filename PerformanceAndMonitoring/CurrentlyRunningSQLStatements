@@ -1,4 +1,5 @@
-SELECT [Spid] = session_id,
+SELECT blocking_session_id,
+	[Spid] = session_id,
        ecid,
        SUBSTRING(CAST(percent_complete AS VARCHAR(10)), 1, 5) + ' %' AS 'percent_complete',
        --	, cast(datediff(MM,start_time,getdate()) as varchar(100))+':'+substring(cast(datediff(SS,start_time,getdate()) as varchar(100)) 
