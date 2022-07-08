@@ -11,6 +11,7 @@ SELECT
 	, A.role_principal_name							  as 'role_assigned'
 	, perm.state_desc								  as 'state_desc'
 	, perm.class_desc								  as 'object_type'
+	, obj.[type_desc]								  AS 'obj_type_desc'
 	, COALESCE(s.name, SCHEMA_NAME(obj.schema_id))	  as 'schema_name'
     , OBJECT_NAME(perm.major_id)					  as 'object_name'
     , col.[name]									  as 'column_name'
@@ -55,7 +56,7 @@ FROM sys.database_principals princ
 				) A ON princ.name collate SQL_Latin1_General_CP1_CI_AS = A.member_principal_name
 WHERE princ.[type] IN ('E','S','X')
   and princ.principal_id > 4
-  --AND princ.name IN ('')
+  --AND princ.name IN ('aws_rev')
 group by  princ.type_desc
 		, princ.name
 		, a.role_principal_name
@@ -64,4 +65,5 @@ group by  princ.type_desc
 		, col.[name]
 		, perm.major_id
 		, perm.class_desc
-		, perm.state_desc;
+		, perm.state_desc
+		,obj.[type_desc]
