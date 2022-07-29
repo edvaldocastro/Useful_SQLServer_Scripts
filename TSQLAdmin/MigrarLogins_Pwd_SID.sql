@@ -12,4 +12,4 @@ CREATE LOGIN ' + name + ' WITH PASSWORD = '
         + ' DEFAULT_DATABASE = ' + default_database_name
         + ' ,DEFAULT_LANGUAGE = ' + default_language_name
 FROM    sys.sql_logins
-WHERE name in ( 'login1','login2','login3')
+WHERE name in ( 'login1')
