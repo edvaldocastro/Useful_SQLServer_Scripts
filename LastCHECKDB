@@ -1,0 +1,21 @@
+
+
+
+drop table if exists #DBInfo 
+drop table if exists #Value 
+
+CREATE TABLE #DBInfo (ParentObject VARCHAR(255), [Object] VARCHAR(255), Field VARCHAR(255), [Value] VARCHAR(255))
+CREATE TABLE #Value (DatabaseName VARCHAR(255), LastDBCCCheckDB DATETIME)
+
+EXECUTE sp_MSforeachdb @command1='INSERT INTO #DBInfo EXECUTE (''DBCC DBINFO ( [?] ) WITH TABLERESULTS'');
+INSERT INTO #Value (DatabaseName, LastDBCCCheckDB) (SELECT ''[?]'', [Value] FROM #DBInfo WHERE Field = ''dbi_dbccLastKnownGood'');
+TRUNCATE TABLE #DBInfo;
+'
+---- Todos os bancos Bancos que ja tiveram um DBCC executado alguma vez
+--SELECT * FROM #Value where DATEPART(year,LastDBCCCheckDB) <> 1900
+
+---- Todos os bancos Bancos que nunca tiveram um DBCC executado 
+--SELECT * FROM #Value where DATEPART(year,LastDBCCCheckDB) = 1900
+
+-- Bancos que nao executaram DBCC hoje.
+SELECT * FROM #Value where DATEPART(day,LastDBCCCheckDB) < DATEPART(day,getdate())
