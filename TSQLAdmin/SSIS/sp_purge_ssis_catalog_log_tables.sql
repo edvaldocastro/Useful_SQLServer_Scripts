@@ -20,7 +20,6 @@ as
 		*/
 
 		SET NOCOUNT ON
-		--selim made changes
 
 		DECLARE @enable_purge BIT 
 		DECLARE @retention_period_days SMALLINT
