@@ -16,7 +16,7 @@ as
 						version, the table and/or column names may be different.
 
 			https://www.timmitchell.net/post/2018/12/30/clean-up-the-ssis-catalog/
-			testsm
+
 	
 		*/
 
