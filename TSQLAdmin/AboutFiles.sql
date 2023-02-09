@@ -16,6 +16,8 @@ select db_name() as 'DatabaseName'
     on  ds.data_space_id = df.data_space_id
                                                                                                     
 
+
+
 						  
 						  
 /* All databases in a given instance */ 
