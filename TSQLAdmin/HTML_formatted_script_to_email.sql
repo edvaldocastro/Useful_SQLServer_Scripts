@@ -1,5 +1,5 @@
-DECLARE @EmailRecipient NVARCHAR(255) = 'recipient@example.com';
-DECLARE @EmailSubject NVARCHAR(255) = 'Partition Rebuild Script';
+DECLARE @EmailRecipient NVARCHAR(255) = N'recipient@example.com';
+DECLARE @EmailSubject NVARCHAR(255) = N'Partition Rebuild Script';
 DECLARE @EmailBody NVARCHAR(MAX);
 
 DECLARE @temp AS TABLE
@@ -26,47 +26,44 @@ EXEC sp_MSforeachdb '
         AND p.data_compression_desc = ''NONE''
     ORDER BY p.rows';
 
-SELECT @EmailBody = 
-    '<html>' +
-    '<head>' +
-    '<style>' +
-    'table {border-collapse: collapse;}' +
-    'th, td {border: 1px solid black; padding: 5px;}' +
-    '</style>' +
-    '</head>' +
-    '<body>' +
-    '<h2>Partition Rebuild Script</h2>' +
-    '<table>' +
-    '<tr>' +
-    '<th>Instance Name</th>' +
-    '<th>Database Name</th>' +
-    '<th>Schema Name</th>' +
-    '<th>Table Name</th>' +
-    '<th>Compression Type</th>' +
-    '<th>Number of Rows</th>' +
-    '<th>Rebuild Script</th>' +
-    '</tr>';
+SELECT @EmailBody
+		= N'<html>' 
+			+ N'<head>' 
+				+ N'<style>' 
+					+ N'table {border-collapse: collapse;}'
+					+ N'th, td {border: 1px solid black; padding: 5px;}' 
+				+ N'</style>' 
+			+ N'</head>' 
+			+ N'<body>'
+				+ N'<h2>Partition Rebuild Script</h2>' 
+				+ N'<table>' 
+					+ N'<tr>' 
+						+ N'<th>Instance Name</th>'
+						+ N'<th>Database Name</th>' 
+						+ N'<th>Schema Name</th>' 
+						+ N'<th>Table Name</th>' 
+						+ N'<th>Compression Type</th>'
+						+ N'<th>Number of Rows</th>' 
+						+ N'<th>Rebuild Script</th>' 
+					+ N'</tr>';
 
-SELECT @EmailBody = @EmailBody +
-    '<tr>' +
-    '<td>' + instancename + '</td>' +
-    '<td>' + dbname + '</td>' +
-    '<td>' + schemaname + '</td>' +
-    '<td>' + tablename + '</td>' +
-    '<td>' + data_compression_desc + '</td>' +
-    '<td>' + CAST(rows AS NVARCHAR(20)) + '</td>' +
-    '<td>' + command + '</td>' +
-    '</tr>'
+SELECT @EmailBody
+		= @EmailBody 
+				+ N'<tr>' 
+					+ N'<td>' + instancename + N'</td>' 
+					+ N'<td>' + dbname + N'</td>' 
+					+ N'<td>' + schemaname + N'</td>' 
+					+ N'<td>' + tablename + N'</td>' 
+					+ N'<td>' + data_compression_desc + N'</td>' 
+					+ N'<td>' + CAST(rows AS NVARCHAR(20)) + N'</td>' 
+					+ N'<td>' + command + N'</td>' + N'</tr>'
 FROM @temp
-WHERE dbname NOT IN ('master', 'tempdb')
-    AND rows > 0;
+WHERE dbname NOT IN ( 'master', 'tempdb' )
+      AND rows > 0;
 
-SET @EmailBody = @EmailBody +
-    '</table>' +
-    '</body>' +
-    '</html>';
+SET @EmailBody = @EmailBody + N'</table>' + N'</body>' + N'</html>';
 
-	SELECT @EmailBody
+SELECT @EmailBody;
 
 --EXEC msdb.dbo.sp_send_dbmail
 --    @profile_name = 'YourProfileName',  -- Replace with the name of your Database Mail profile
