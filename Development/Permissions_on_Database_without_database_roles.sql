@@ -1,5 +1,5 @@
 /*
-	Permissions on Database (without database roles)
+	Permissions on Database (excluding database roles)
 */
 
 SELECT  
@@ -51,34 +51,13 @@ group by  princ.type_desc
 		, perm.class_desc
 		, perm.state_desc
 
-/*
-	Permissions on Database roles
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+/*	
+	DATABASE ROLES - (ALTER ROLLE ADD MEMBER)
+	Query to retrieve database roles and their members  ON PREMISES SQL SERVER
+
 */
-
-
-
--- Query to retrieve database roles and their members
-SELECT r.name AS 'RoleName',
-       m.name AS 'MemberName'
-FROM sys.database_role_members AS m
-    INNER JOIN sys.database_principals AS r
-        ON m.role_principal_id = r.principal_id
-ORDER BY r.name,
-         m.name;
-
-
-SELECT * 
-FROM sys.database_role_members rm
-JOIN sys.database_principals dp
-ON rm.role_principal_id = dp.principal_id
-ORDER BY 2
-
-
-
--- Specify the target database
-USE YourDatabaseName;
-
--- Query to retrieve database roles and their members  ON PREMISES SQL SERVER
 SELECT 
 	DISTINCT	 
 	  r.name AS 'RoleName'
@@ -96,7 +75,13 @@ LEFT JOIN sys.database_principals AS p ON dp.grantor_principal_id = p.principal_
 ORDER BY r.name, m.name;
 
 
--- Query to retrieve database roles and their members  AZURE SYNAPSE
+/*
+	DATABASE ROLES - (EXEC sp_addrolemember)
+	Works on: Azure Synapse, SQL Managed Instances, SQL Server On Premises
+	Query to retrieve database roles and their members, as well output a granting script
+
+*/
+
 SELECT 
 	DISTINCT	 
 	  r.name AS 'RoleName'
@@ -113,10 +98,6 @@ LEFT JOIN sys.database_permissions AS dp ON dp.grantee_principal_id = m.principa
 LEFT JOIN sys.database_principals AS p ON dp.grantor_principal_id = p.principal_id
 ORDER BY r.name, m.name;
 
-
-ALTER ROLE [bi_dw_etl] ADD MEMBER [azu-fr-bi-1-app-adf-largec]
-
- EXEC sp_addrolemember 'bi_developer','azu-fr-bi-dev'
 
 
 
