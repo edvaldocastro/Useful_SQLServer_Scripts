@@ -8,7 +8,7 @@ select o.object_id as 'Object_id',
           i.index_id as 'Index_id',
           i.name as 'Index_name',
           STATS_DATE(i.object_id,index_id) as 'Last updated',
-          datediff(day,STATS_DATE(i.object_id,index_id),GETDATE()) as 'Day since updated',
+          datediff(day,STATS_DATE(i.object_id,index_id),GETDATE()) as 'Days since updated',
           'UPDATE STATISTICS ['+s.name+'].['+o.name+'] ['+i.name+'] WITH FULLSCAN;' as 'Update Idx Stats',
           'UPDATE STATISTICS ['+s.name+'].['+o.name+'] WITH FULLSCAN;' as 'Update Obj Stats'
   from sys.indexes i
@@ -37,7 +37,7 @@ where o.object_id > 255
 	      CAST(SUM(a.total_pages) * 8 /1024. as numeric(12,2)) as 'TotalSpaceMB', 
 		  STATS_DATE(o.object_id, st.stats_id) AS 'Stats date',
           STATS_DATE(i.object_id,i.index_id) as 'Last updated',
-          datediff(day,STATS_DATE(i.object_id,i.index_id),GETDATE()) as 'Day since updated',
+          datediff(day,STATS_DATE(i.object_id,i.index_id),GETDATE()) as 'Days since updated',
            'UPDATE STATISTICS ['+s.name+'].['+o.name+'] ('+st.name+') WITH FULLSCAN;' as 'Update Obj Stats'
   from sys.indexes i
   join sys.objects o
