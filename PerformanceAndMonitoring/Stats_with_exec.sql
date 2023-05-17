@@ -91,8 +91,9 @@ BEGIN
     SET @command = (SELECT tsql_command FROM #tb_command WHERE id = @id);
 
     -- Execute the T-SQL command
-    EXEC sp_executesql @command;
 	print 'now executing: '+@command
+    EXEC sp_executesql @command;
+
 
     -- Move to the next row
     SET @id = @id + 1;
