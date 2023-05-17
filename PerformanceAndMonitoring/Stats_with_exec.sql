@@ -103,7 +103,7 @@ BEGIN
     SET @command = (SELECT tsql_command FROM #tb_command WHERE id = @id);
 
     -- Execute the T-SQL command
-	select cast(cast(getdate() as smalldatetime) as varchar(20))+' - now executing: '+@command
+	print cast(cast(getdate() as smalldatetime) as varchar(20))+' - now executing: '+@command
 	EXEC sp_executesql @command
 	
 
