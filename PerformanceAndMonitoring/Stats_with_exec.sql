@@ -1,3 +1,15 @@
+/*
+	This script will show information about tables, indexes and statistics, and it will automatically run update statistics statements agains the whole database
+	for tables with rowcount > 0.
+
+	if the intention is only to list the information, run only the first part of the script.
+
+	if the intention is to show the information and update statistics, run it all at once.
+
+
+*/
+
+
 SET NOCOUNT ON
 SELECT distinct
 	   o.object_id AS 'Object_id',
@@ -91,8 +103,15 @@ BEGIN
     SET @command = (SELECT tsql_command FROM #tb_command WHERE id = @id);
 
     -- Execute the T-SQL command
-	print 'now executing: '+@command
-    EXEC sp_executesql @command;
+	--print cast(cast(getdate() as smalldatetime) as varchar(20))+' - now executing: '+@command
+    
+	-- Display the current iteration message
+    DECLARE @message VARCHAR(100);
+    SET @message =convert(varchar(50),getdate(),113) + ' * now executing: ' + @command;
+    RAISERROR('%s', 0, 1, @message) WITH NOWAIT;
+
+	EXEC sp_executesql @command
+	
 
 
     -- Move to the next row
