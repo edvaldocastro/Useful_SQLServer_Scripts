@@ -103,7 +103,13 @@ BEGIN
     SET @command = (SELECT tsql_command FROM #tb_command WHERE id = @id);
 
     -- Execute the T-SQL command
-	print cast(cast(getdate() as smalldatetime) as varchar(20))+' - now executing: '+@command
+	--print cast(cast(getdate() as smalldatetime) as varchar(20))+' - now executing: '+@command
+    
+	-- Display the current iteration message
+    DECLARE @message VARCHAR(100);
+    SET @message =convert(varchar(50),getdate(),113) + ' * now executing: ' + @command;
+    RAISERROR('%s', 0, 1, @message) WITH NOWAIT;
+
 	EXEC sp_executesql @command
 	
 
