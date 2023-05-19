@@ -88,7 +88,7 @@ GROUP BY o.object_id,s.name,o.name,o.type_desc,i.index_id,i.name,p.rows,i.object
 HAVING o.object_id > 255
        AND s.name <> 'sys'
        AND o.type IN ( 'S', 'U', 'V','IT' )
-	   AND p.rows > 0
+	   AND p.rows > 1000
 --ORDER BY rows,STATS_DATE(i.object_id, i.index_id),STATS_DATE(o.object_id, st.stats_id);
 
 -- Declare variables
