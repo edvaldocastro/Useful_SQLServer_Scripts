@@ -54,7 +54,7 @@ GROUP BY o.object_id,
 HAVING o.object_id > 255
        AND s.name <> 'sys'
        AND o.type IN ( 'S', 'U', 'V','IT' )
-	   AND p.rows > 0
+	   AND p.rows > 1000
 ORDER BY rows, 
 		STATS_DATE(i.object_id, i.index_id),
         STATS_DATE(o.object_id, st.stats_id);
