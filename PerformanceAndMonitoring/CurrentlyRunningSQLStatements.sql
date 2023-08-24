@@ -9,6 +9,7 @@ SELECT blocking_session_id,
        total_elapsed_time, 
        [Database] = DB_NAME(sp.dbid),
        [User] = nt_username,
+	   [Login] = loginame,
        [Status] = er.status,
        [Wait] = wait_type,
        [Individual Query] = SUBSTRING(
