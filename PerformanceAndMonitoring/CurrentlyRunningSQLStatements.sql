@@ -3,7 +3,7 @@
 	Modified by: Edvaldo Castro
 	Source: Unknown
 	Data Last Modification: 12/09/2023
-	Desc Last Modification: Added EstimatedCompetionTime to resultset
+	Desc Last Modification: modified the DATETIME2 columns to hide milliseconds.
 
 
 */
@@ -12,10 +12,11 @@ SELECT blocking_session_id,
 	[Spid] = session_id,
        ecid,
        SUBSTRING(CAST(percent_complete AS VARCHAR(10)), 1, 5) + ' %' AS 'percent_complete',
+	   CONVERT(DATETIME2(0),er.start_time) AS 'start_time',
        CAST(DATEDIFF(MINUTE, start_time, GETDATE()) / 60 AS VARCHAR(100)) + 'h'
        + CAST(DATEDIFF(MINUTE, start_time, GETDATE()) % 60 AS VARCHAR(100)) + 'm'AS 'elapsed_time (h:m)',
 		CASE WHEN ([er].[percent_complete] IS NOT NULL) AND	(([er].[command] LIKE 'Backup%') OR ([er].[command] LIKE 'Restore%'))
-				THEN DATEADD(SECOND,(DATEDIFF(SECOND, ISNULL(start_time,GETDATE()), GETDATE()) / ISNULL(percent_complete,1)) * (100 - ISNULL(percent_complete,1)), GETDATE())
+				THEN CONVERT(DATETIME2(0),DATEADD(SECOND,(DATEDIFF(SECOND, ISNULL(start_time,GETDATE()), GETDATE()) / ISNULL(percent_complete,1)) * (100 - ISNULL(percent_complete,1)), GETDATE()))
 		END AS 'EstimatedCompletionTime',
 
        DATEDIFF(MINUTE, start_time, GETDATE()) AS 'elapsed_time (m)',
@@ -49,3 +50,6 @@ WHERE session_id > 50 -- Ignore system spids.
       AND session_id NOT IN ( @@SPID ) -- Ignore this current statement.
 ORDER BY 1,
          2;
+
+
+
