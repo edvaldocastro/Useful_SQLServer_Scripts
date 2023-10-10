@@ -4,10 +4,10 @@ $database = 'frbinetline'
 $repository = 'azure-sqlmi-frbinetline'
 
 #list os schemas to be opened
-$schemas =  Get-Content "C:\Work\Git-Repo\DatabaseProjects\$repository\schemalist.txt"
+$schemas =  Get-Content "C:\Work\Git-Repo\DatabaseProjects\schemalist.txt"
 
 # Read the list of SQL filenames from the second file
-$sqlFiles = Get-Content "C:\Work\Git-Repo\DatabaseProjects\$repository\filelist.txt"
+$sqlFiles = Get-Content "C:\Work\Git-Repo\DatabaseProjects\filelist.txt"
 
 # Iterate through each folder in the list
 foreach ($schema in $schemas) {
