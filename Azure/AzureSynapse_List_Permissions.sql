@@ -255,4 +255,4 @@ FROM [sys].[database_permissions] [Permission]
     LEFT OUTER JOIN [ObjectList]
         ON [Permission].[major_id] = [ObjectList].[id]
            AND [Permission].[class_desc] = [ObjectList].[class_desc]
-WHERE 1 = 1;
+WHERE 1 = 1 AND [Grantee].[name] not in ('public','guest');
