@@ -1,3 +1,23 @@
+
+/*
+Reference: https://copyprogramming.com/howto/troubleshoot-orphaned-users-sql-server
+
+Detect Orphaned Users
+Applicable to both SQL Server and PDW.
+In order to target Detect Orphaned Users in SQL Server, utilize the subsequent instruction within the user database to identify absent SQL Server authentication logins:
+
+*/
+
+SELECT  dp.name AS user_name,/*dp.type_desc,*/ dp.sid, 'ALTER USER  ['+dp.name+'] WITH Login = ['+dp.name+']'  
+FROM sys.database_principals AS dp  
+LEFT JOIN sys.server_principals AS sp  
+    ON dp.sid = sp.sid  
+WHERE sp.sid IS NULL  
+    AND dp.authentication_type_desc = 'INSTANCE';  
+
+
+------------------------------------------------------------------------------------------------------
+
 /*
 source: 
 https://sqlstudies.com/free-scripts/sp_azsyndbpermissions/
@@ -255,4 +275,9 @@ FROM [sys].[database_permissions] [Permission]
     LEFT OUTER JOIN [ObjectList]
         ON [Permission].[major_id] = [ObjectList].[id]
            AND [Permission].[class_desc] = [ObjectList].[class_desc]
-WHERE 1 = 1;
+WHERE 1 = 1 AND [Grantee].[name] not in ('public','guest');
+
+
+
+
+
