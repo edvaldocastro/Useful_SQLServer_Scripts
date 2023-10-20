@@ -1,7 +1,7 @@
 # Read the list of folders from the first file
 
-$database = 'frbipoweron'
-$repository = 'azure-sqlmi-frbipoweron'
+$database = 'databasename'
+$repository = 'repository'
 
 #list os schemas to be opened
 $schemas =  Get-Content "C:\Work\Git-Repo\DatabaseProjects\schemalist.txt"
