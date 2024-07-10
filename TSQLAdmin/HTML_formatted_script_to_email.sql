@@ -69,7 +69,7 @@ SET @EmailBody = @EmailBody + N'</table>' + N'</body>' + N'</html>';
 SELECT @EmailBody;
 
 EXEC msdb.dbo.sp_send_dbmail
-    @profile_name = @profilename, --'YourProfileName',  -- Replace with the name of your Database Mail profile
+    @profile_name = @profilename, 
     @recipients = @EmailRecipient,
     @subject = @EmailSubject,
     @body = @EmailBody,
