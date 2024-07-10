@@ -1,6 +1,9 @@
-DECLARE @EmailRecipient NVARCHAR(255) = N'recipient@example.com';
-DECLARE @EmailSubject NVARCHAR(255) = N'Partition Rebuild Script';
+DECLARE @EmailRecipient NVARCHAR(255) = N'recipient@example.com'; -- SET THE RECIPIENTS HERE, SEPARATED BY ";" 
+DECLARE @EmailSubject NVARCHAR(255) = N'Partition Rebuild Script'; --SET THE EMAIL SUBJECT HERE
 DECLARE @EmailBody NVARCHAR(MAX);
+DECLARE @profilename nvarchar(300)
+SELECT @profilename = p.name FROM sysmail_principalprofile AS pp JOIN sysmail_profile AS p ON pp.profile_id = p.profile_id WHERE pp.is_default = 1;
+
 
 DECLARE @temp AS TABLE
 (
@@ -65,12 +68,12 @@ SET @EmailBody = @EmailBody + N'</table>' + N'</body>' + N'</html>';
 
 SELECT @EmailBody;
 
---EXEC msdb.dbo.sp_send_dbmail
---    @profile_name = 'YourProfileName',  -- Replace with the name of your Database Mail profile
---    @recipients = @EmailRecipient,
---    @subject = @EmailSubject,
---    @body = @EmailBody,
---    @body_format = 'HTML';
+EXEC msdb.dbo.sp_send_dbmail
+    @profile_name = @profilename, --'YourProfileName',  -- Replace with the name of your Database Mail profile
+    @recipients = @EmailRecipient,
+    @subject = @EmailSubject,
+    @body = @EmailBody,
+    @body_format = 'HTML';
 
 
 
