@@ -38,7 +38,7 @@ where o.object_id > 255
 		  STATS_DATE(o.object_id, st.stats_id) AS 'Stats date',
           STATS_DATE(i.object_id,i.index_id) as 'Last updated',
           datediff(day,STATS_DATE(i.object_id,i.index_id),GETDATE()) as 'Days since updated',
-           'UPDATE STATISTICS ['+s.name+'].['+o.name+'] ('+st.name+') WITH FULLSCAN;' as 'Update Obj Stats'
+           'UPDATE STATISTICS ['+s.name+'].['+o.name+'] (['+st.name+']) WITH FULLSCAN;' as 'Update Obj Stats'
   from sys.indexes i
   join sys.objects o
     on i.object_id = o.object_id
