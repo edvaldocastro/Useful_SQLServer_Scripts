@@ -1,8 +1,9 @@
 <# 
-.SYNOPSIS Recover deleted blobs from a storage account that has soft-delete enabled. 
-.Description The Script recovers blobs in soft-delete state. 
-.NOTES The script requires the Az.Storage module version 5.5.0 or higher 
-Author: Everton Oliveira 04/2023 #>
+
+Recover deleted blobs from a storage account that has soft-delete enabled. 
+The Script recovers blobs in soft-delete state. 
+The script requires the Az.Storage module version 5.5.0 or higher 
+
 
 $storageAccountName = "storageAccountName"
 $containerName = "containerName"

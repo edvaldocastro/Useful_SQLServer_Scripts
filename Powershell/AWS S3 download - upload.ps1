@@ -1,7 +1,7 @@
-$wordforfilename = 'RyanairACProddb'
+$wordforfilename = 'wordforfilename'
 $numberOfFiles = 10
 $localPath = 'I:\shared\'
-$awsS3URI = 's3://fr-marketing-db-backup/PRODACMSQL1/ACM1-Migration/'
+$awsS3URI = 's3://accountname/bucketname/folderName//'
 $outputDir = 'C:\Temp\path\output\'
 $operation = 'download'       #Possible values: 'download', 'upload'
 
